@@ -47,6 +47,20 @@
       "message": "Usługa tymczasowo niedostępna. Proszę spróbować później.",
       "autoRetry": "Automatyczna próba ponownego połączenia co {seconds} sek...",
       "retry": "Spróbuj ponownie"
+    },
+    "status": {
+      "healthy": "Działa",
+      "degraded": "Obniżona wydajność",
+      "unhealthy": "Nie działa",
+      "unknown": "Nieznany"
+    },
+    "serviceCard": {
+      "neverChecked": "Nigdy nie sprawdzany",
+      "updated": "Zaktualizowano",
+      "interval": "Interwał",
+      "enabled": "Włączony",
+      "disabled": "Wyłączony",
+      "url": "URL"
     }
   }
 }

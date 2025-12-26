@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { formatRelativeTime } from '@/utils/date';
 import { parseHealthStatus, parseServiceType, getServiceTypeLabel } from '@/utils/status';
 import StatusIndicator from './StatusIndicator';
@@ -12,8 +13,10 @@ interface ServiceCardProps {
 }
 
 const ServiceCard = ({ service, clickable = true }: ServiceCardProps) => {
+  const { t } = useTranslation();
+
   const getLastCheckedText = () => {
-    if (!service.lastCheckedAt) return 'Никогда не проверялся';
+    if (!service.lastCheckedAt) return t('public.serviceCard.neverChecked');
     return formatRelativeTime(service.lastCheckedAt);
   };
 
@@ -77,7 +80,7 @@ const ServiceCard = ({ service, clickable = true }: ServiceCardProps) => {
 
         {isFullService && (service as ServiceDto).url && (
           <div className="service-card-url">
-            <span className="service-card-url-label">URL:</span>
+            <span className="service-card-url-label">{t('public.serviceCard.url')}:</span>
             <code className="service-card-url-value" title={(service as ServiceDto).url}>
               {(service as ServiceDto).url.length > 40 
                 ? `${(service as ServiceDto).url.substring(0, 40)}...` 
@@ -89,13 +92,13 @@ const ServiceCard = ({ service, clickable = true }: ServiceCardProps) => {
         {isFullService && (
           <div className="service-card-meta">
             <div className="service-card-meta-item">
-              <span className="service-card-meta-label">Интервал:</span>
+              <span className="service-card-meta-label">{t('public.serviceCard.interval')}:</span>
               <span className="service-card-meta-value">{(service as ServiceDto).checkInterval}с</span>
             </div>
             {(service as ServiceDto).isEnabled !== undefined && (
               <div className="service-card-meta-item">
                 <span className={`service-card-badge ${(service as ServiceDto).isEnabled ? 'enabled' : 'disabled'}`}>
-                  {(service as ServiceDto).isEnabled ? 'Включен' : 'Выключен'}
+                  {(service as ServiceDto).isEnabled ? t('public.serviceCard.enabled') : t('public.serviceCard.disabled')}
                 </span>
               </div>
             )}
@@ -105,7 +108,7 @@ const ServiceCard = ({ service, clickable = true }: ServiceCardProps) => {
         <div className="service-card-footer">
           <span className="service-card-time">
             <span className="service-card-time-icon">🕐</span>
-            Обновлено {getLastCheckedText()}
+            {t('public.serviceCard.updated')} {getLastCheckedText()}
           </span>
         </div>
       </div>

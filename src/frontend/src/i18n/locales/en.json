@@ -47,6 +47,20 @@
       "message": "Service temporarily unavailable. Please try again later.",
       "autoRetry": "Automatic reconnection attempt every {seconds} sec...",
       "retry": "Try again"
+    },
+    "status": {
+      "healthy": "Healthy",
+      "degraded": "Degraded",
+      "unhealthy": "Unhealthy",
+      "unknown": "Unknown"
+    },
+    "serviceCard": {
+      "neverChecked": "Never checked",
+      "updated": "Updated",
+      "interval": "Interval",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "url": "URL"
     }
   }
 }

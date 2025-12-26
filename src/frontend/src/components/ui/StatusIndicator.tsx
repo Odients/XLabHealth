@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { HealthStatus } from '@/types';
 import './StatusIndicator.css';
 
@@ -6,7 +7,6 @@ interface StatusIndicatorProps {
   size?: 'sm' | 'md' | 'lg';
   showLabel?: boolean;
   showIcon?: boolean;
-  labelLanguage?: 'ru' | 'en';
 }
 
 const StatusIndicator = ({
@@ -14,22 +14,15 @@ const StatusIndicator = ({
   size = 'md',
   showLabel = false,
   showIcon = true,
-  labelLanguage = 'ru',
 }: StatusIndicatorProps) => {
+  const { t } = useTranslation();
+
   const getStatusConfig = () => {
-    const labels = {
-      ru: {
-        [HealthStatus.Healthy]: 'Работает',
-        [HealthStatus.Degraded]: 'Деградирован',
-        [HealthStatus.Unhealthy]: 'Не работает',
-        [HealthStatus.Unknown]: 'Неизвестно',
-      },
-      en: {
-        [HealthStatus.Healthy]: 'Healthy',
-        [HealthStatus.Degraded]: 'Degraded',
-        [HealthStatus.Unhealthy]: 'Unhealthy',
-        [HealthStatus.Unknown]: 'Unknown',
-      },
+    const statusLabels = {
+      [HealthStatus.Healthy]: t('public.status.healthy'),
+      [HealthStatus.Degraded]: t('public.status.degraded'),
+      [HealthStatus.Unhealthy]: t('public.status.unhealthy'),
+      [HealthStatus.Unknown]: t('public.status.unknown'),
     };
 
     const configs = {
@@ -54,7 +47,7 @@ const StatusIndicator = ({
     const config = configs[status] || configs[HealthStatus.Unknown];
     return {
       ...config,
-      label: labels[labelLanguage][status] || labels[labelLanguage][HealthStatus.Unknown],
+      label: statusLabels[status] || statusLabels[HealthStatus.Unknown],
     };
   };
 
