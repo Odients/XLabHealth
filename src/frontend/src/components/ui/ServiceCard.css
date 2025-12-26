@@ -35,6 +35,21 @@
   background: var(--color-primary);
 }
 
+.service-card-non-clickable {
+  cursor: default;
+  pointer-events: auto;
+}
+
+.service-card-non-clickable:hover {
+  box-shadow: var(--shadow-sm);
+  transform: none;
+  border-color: var(--color-border);
+}
+
+.service-card-non-clickable:hover::before {
+  background: var(--color-border);
+}
+
 .service-card-status-bar {
   position: absolute;
   top: 0;

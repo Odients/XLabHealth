@@ -8,9 +8,10 @@ import './ServiceCard.css';
 
 interface ServiceCardProps {
   service: PublicServiceDto | ServiceDto;
+  clickable?: boolean;
 }
 
-const ServiceCard = ({ service }: ServiceCardProps) => {
+const ServiceCard = ({ service, clickable = true }: ServiceCardProps) => {
   const getLastCheckedText = () => {
     if (!service.lastCheckedAt) return 'Никогда не проверялся';
     return formatRelativeTime(service.lastCheckedAt);
@@ -84,11 +85,8 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
     }
   }
 
-  return (
-    <Link
-      to={`/services/${service.id}`}
-      className="service-card"
-    >
+  const cardContent = (
+    <>
       <div className="service-card-status-bar" data-status={String(status)}></div>
       
       <div className="service-card-content">
@@ -142,7 +140,24 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
           </span>
         </div>
       </div>
-    </Link>
+    </>
+  );
+
+  if (clickable) {
+    return (
+      <Link
+        to={`/services/${service.id}`}
+        className="service-card"
+      >
+        {cardContent}
+      </Link>
+    );
+  }
+
+  return (
+    <div className="service-card service-card-non-clickable">
+      {cardContent}
+    </div>
   );
 };
 
