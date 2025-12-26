@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/store/authStore';
 import { useSignalR } from '@/hooks/useSignalR';
 import { useBackendHealth } from '@/hooks/useBackendHealth';
@@ -10,6 +11,7 @@ interface HeaderProps {
 }
 
 const Header = ({ isPublic }: HeaderProps) => {
+  const { t } = useTranslation();
   const { isAuthenticated, user, logout, checkAuth } = useAuthStore();
   const { connectionState } = useSignalR();
   const { backendAvailable } = useBackendHealth();
@@ -101,7 +103,7 @@ const Header = ({ isPublic }: HeaderProps) => {
             </>
           ) : (
             <Link to="/login" className="btn-login">
-              Вход
+              {isPublic ? t('public.header.signIn') : 'Вход'}
             </Link>
           )}
         </div>

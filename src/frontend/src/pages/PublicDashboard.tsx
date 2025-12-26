@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { publicApi } from '@/services/api';
 import { useAuthStore } from '@/store/authStore';
 import StatusIndicator from '@/components/ui/StatusIndicator';
@@ -13,6 +14,7 @@ import { isBackendUnavailable } from '@/utils/backend';
 import './PublicDashboard.css';
 
 const PublicDashboard = () => {
+  const { t, i18n } = useTranslation();
   const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
   const [clientIp, setClientIp] = useState<string | null>(null);
@@ -66,7 +68,7 @@ const PublicDashboard = () => {
     return (
       <div className="public-dashboard">
         <div className="container">
-          <div className="loading">Загрузка...</div>
+          <div className="loading">{t('public.dashboard.loading')}</div>
         </div>
       </div>
     );
@@ -99,10 +101,15 @@ const PublicDashboard = () => {
             <div className="ip-blocked-warning-content">
               <span className="ip-blocked-icon">⚠️</span>
               <div className="ip-blocked-text">
-                <strong>Внимание:</strong> Ваш IP-адрес ({ipStatus.ipAddress || 'неизвестен'}) находится в списке заблокированных.
+                <strong>{t('public.dashboard.ipBlocked.warning')}:</strong>{' '}
+                {t('public.dashboard.ipBlocked.message', { 
+                  ip: ipStatus.ipAddress || t('public.dashboard.ipBlocked.unknown')
+                })}
                 {ipStatus.blockedDate && (
                   <span className="ip-blocked-date">
-                    {' '}Дата блокировки: {new Date(ipStatus.blockedDate).toLocaleString('ru-RU')}
+                    {' '}{t('public.dashboard.ipBlocked.blockedDate', { 
+                      date: new Date(ipStatus.blockedDate).toLocaleString(i18n.language)
+                    })}
                   </span>
                 )}
               </div>
@@ -112,14 +119,14 @@ const PublicDashboard = () => {
         
         <div className="dashboard-header">
           <div className="dashboard-header-content">
-            <h1>Статус системы</h1>
+            <h1>{t('public.dashboard.title')}</h1>
             {isAuthenticated && (
               <button
                 onClick={() => navigate('/dashboard')}
                 className="btn-dashboard-link"
-                title="Перейти в приватный дашборд"
+                title={t('public.dashboard.goToPrivateDashboard')}
               >
-                Приватный дашборд
+                {t('public.dashboard.privateDashboard')}
               </button>
             )}
           </div>
@@ -134,38 +141,38 @@ const PublicDashboard = () => {
           <div className="metrics-grid">
             <div className="metric-card">
               <div className="metric-value">{status.totalServices}</div>
-              <div className="metric-label">Всего сервисов</div>
+              <div className="metric-label">{t('public.dashboard.totalServices')}</div>
             </div>
             <div className="metric-card healthy">
               <div className="metric-value">{status.healthyServices}</div>
-              <div className="metric-label">Работают</div>
+              <div className="metric-label">{t('public.dashboard.working')}</div>
             </div>
             <div className="metric-card degraded">
               <div className="metric-value">{status.degradedServices}</div>
-              <div className="metric-label">Деградированы</div>
+              <div className="metric-label">{t('public.dashboard.degraded')}</div>
             </div>
             <div className="metric-card unhealthy">
               <div className="metric-value">{status.unhealthyServices}</div>
-              <div className="metric-label">Проблемы</div>
+              <div className="metric-label">{t('public.dashboard.problems')}</div>
             </div>
             <div className="metric-card">
               <div className="metric-value">
                 {status.availabilityPercentage.toFixed(1)}%
               </div>
-              <div className="metric-label">Доступность</div>
+              <div className="metric-label">{t('public.dashboard.availability')}</div>
             </div>
           </div>
         )}
 
         {status?.lastUpdated && (
           <div className="last-updated">
-            Последнее обновление:{' '}
-            {new Date(status.lastUpdated).toLocaleString('ru-RU')}
+            {t('public.dashboard.lastUpdated')}:{' '}
+            {new Date(status.lastUpdated).toLocaleString(i18n.language)}
           </div>
         )}
 
         <div className="services-section">
-          <h2>Сервисы</h2>
+          <h2>{t('public.dashboard.services')}</h2>
           {services && services.length > 0 ? (
             <div className="services-grid">
               {services.map((service) => (
@@ -173,7 +180,7 @@ const PublicDashboard = () => {
               ))}
             </div>
           ) : (
-            <div className="no-services">Нет доступных сервисов</div>
+            <div className="no-services">{t('public.dashboard.noServices')}</div>
           )}
         </div>
       </div>

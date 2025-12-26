@@ -71,8 +71,21 @@ export const isBackendUnavailable = (error: unknown): boolean => {
 /**
  * Получает нейтральное сообщение для недоступности бэкенда
  * @returns Нейтральное сообщение
+ * 
+ * Примечание: Эта функция используется в местах, где i18n может быть недоступен.
+ * Для компонентов React используйте useTranslation() напрямую.
  */
 export const getBackendUnavailableMessage = (): string => {
-  return 'Сервис временно недоступен. Пожалуйста, попробуйте позже.';
+  // Пытаемся получить перевод из i18n, если он доступен
+  try {
+    // Динамический импорт для избежания циклических зависимостей
+    const i18n = (window as any).__i18n__;
+    if (i18n) {
+      return i18n.t('public.backendUnavailable.message');
+    }
+  } catch (error) {
+    // Если i18n недоступен, возвращаем английский текст по умолчанию
+  }
+  return 'Service temporarily unavailable. Please try again later.';
 };
 

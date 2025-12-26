@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import './BackendUnavailable.css';
 
 interface BackendUnavailableProps {
@@ -12,11 +13,13 @@ interface BackendUnavailableProps {
  * Компонент для отображения нейтрального сообщения о недоступности бэкенда
  */
 const BackendUnavailable = ({ 
-  message = 'Сервис временно недоступен. Пожалуйста, попробуйте позже.',
+  message,
   onRetry,
   autoRetry = true,
   autoRetryInterval = 10000 // По умолчанию каждые 10 секунд
 }: BackendUnavailableProps) => {
+  const { t } = useTranslation();
+  const defaultMessage = message || t('public.backendUnavailable.message');
   // Автоматическая попытка переподключения
   useEffect(() => {
     if (autoRetry && onRetry) {
@@ -32,10 +35,10 @@ const BackendUnavailable = ({
     <div className="backend-unavailable">
       <div className="backend-unavailable-content">
         <div className="backend-unavailable-icon">⚠️</div>
-        <div className="backend-unavailable-message">{message}</div>
+        <div className="backend-unavailable-message">{defaultMessage}</div>
         {autoRetry && (
           <div className="backend-unavailable-auto-retry">
-            Автоматическая попытка переподключения каждые {autoRetryInterval / 1000} сек...
+            {t('public.backendUnavailable.autoRetry', { seconds: autoRetryInterval / 1000 })}
           </div>
         )}
         {onRetry && (
@@ -43,7 +46,7 @@ const BackendUnavailable = ({
             className="backend-unavailable-retry" 
             onClick={onRetry}
           >
-            Попробовать снова
+            {t('public.backendUnavailable.retry')}
           </button>
         )}
       </div>

@@ -1,0 +1,53 @@
+{
+  "public": {
+    "dashboard": {
+      "title": "Status systemu",
+      "loading": "Ładowanie...",
+      "privateDashboard": "Prywatny panel",
+      "goToPrivateDashboard": "Przejdź do prywatnego panelu",
+      "totalServices": "Wszystkie usługi",
+      "working": "Działają",
+      "degraded": "Obniżona wydajność",
+      "problems": "Problemy",
+      "availability": "Dostępność",
+      "lastUpdated": "Ostatnia aktualizacja",
+      "services": "Usługi",
+      "noServices": "Brak dostępnych usług",
+      "ipBlocked": {
+        "warning": "Uwaga",
+        "message": "Twój adres IP ({ip}) znajduje się na liście zablokowanych.",
+        "blockedDate": "Data blokady: {date}",
+        "unknown": "nieznany"
+      }
+    },
+    "login": {
+      "title": "X-Lab Status",
+      "subtitle": "Logowanie",
+      "username": "Nazwa użytkownika",
+      "password": "Hasło",
+      "usernamePlaceholder": "Wprowadź nazwę użytkownika",
+      "passwordPlaceholder": "Wprowadź hasło",
+      "usernameRequired": "Nazwa użytkownika jest wymagana",
+      "passwordRequired": "Hasło jest wymagane",
+      "signIn": "Zaloguj się",
+      "signingIn": "Logowanie...",
+      "success": "Pomyślnie zalogowano",
+      "error": "Błąd logowania. Sprawdź dane.",
+      "tooManyAttempts": "Zbyt wiele nieudanych prób logowania. Proszę poczekać kilka minut i spróbować ponownie.",
+      "serviceUnavailable": "Usługa tymczasowo niedostępna. Proszę spróbować później."
+    },
+    "header": {
+      "signIn": "Logowanie"
+    },
+    "footer": {
+      "copyright": "© {year} X-Lab Status Service",
+      "website": "x-lab.by"
+    },
+    "backendUnavailable": {
+      "message": "Usługa tymczasowo niedostępna. Proszę spróbować później.",
+      "autoRetry": "Automatyczna próba ponownego połączenia co {seconds} sek...",
+      "retry": "Spróbuj ponownie"
+    }
+  }
+}
+

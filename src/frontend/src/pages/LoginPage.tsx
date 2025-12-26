@@ -1,25 +1,34 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 import { authApi } from '@/services/api';
 import { useAuthStore } from '@/store/authStore';
-import { isBackendUnavailable, getBackendUnavailableMessage } from '@/utils/backend';
+import { isBackendUnavailable } from '@/utils/backend';
 import './LoginPage.css';
 
-const loginSchema = z.object({
-  username: z.string().min(1, 'Имя пользователя обязательно'),
-  password: z.string().min(1, 'Пароль обязателен'),
-});
-
-type LoginFormData = z.infer<typeof loginSchema>;
+type LoginFormData = {
+  username: string;
+  password: string;
+};
 
 const LoginPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { setUser } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
+
+  const loginSchema = useMemo(
+    () =>
+      z.object({
+        username: z.string().min(1, t('public.login.usernameRequired')),
+        password: z.string().min(1, t('public.login.passwordRequired')),
+      }),
+    [t]
+  );
 
   const {
     register,
@@ -37,18 +46,18 @@ const LoginPage = () => {
       localStorage.setItem('refreshToken', response.refreshToken);
       // setUser сохранит пользователя в localStorage автоматически
       setUser(response.user);
-      toast.success('Успешный вход в систему');
+      toast.success(t('public.login.success'));
       navigate('/dashboard');
     } catch (error: any) {
       // Если бэкенд недоступен, показываем нейтральное сообщение
       if (isBackendUnavailable(error)) {
-        toast.error(getBackendUnavailableMessage());
+        toast.error(t('public.backendUnavailable.message'));
       } else if (error.response?.status === 429) {
         // Обработка ошибки "Too Many Requests" (защита от брутфорса)
-        const message = error.response?.data?.message || 'Слишком много неудачных попыток входа. Пожалуйста, подождите несколько минут и попробуйте снова.';
+        const message = error.response?.data?.message || t('public.login.tooManyAttempts');
         toast.error(message, { autoClose: 5000 });
       } else {
-        const errorMessage = error.response?.data?.error || error.response?.data?.message || 'Ошибка входа. Проверьте данные.';
+        const errorMessage = error.response?.data?.error || error.response?.data?.message || t('public.login.error');
         toast.error(errorMessage);
       }
     } finally {
@@ -62,19 +71,19 @@ const LoginPage = () => {
         <div className="login-card">
           <div className="login-header">
             <img src="/favicon.ico" alt="X-Lab" className="login-logo" />
-            <h1>X-Lab Status</h1>
-            <p className="login-subtitle">Вход в систему</p>
+            <h1>{t('public.login.title')}</h1>
+            <p className="login-subtitle">{t('public.login.subtitle')}</p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="login-form">
             <div className="form-group">
-              <label htmlFor="username">Имя пользователя</label>
+              <label htmlFor="username">{t('public.login.username')}</label>
               <input
                 id="username"
                 type="text"
                 {...register('username')}
                 className={errors.username ? 'error' : ''}
-                placeholder="Введите имя пользователя"
+                placeholder={t('public.login.usernamePlaceholder')}
               />
               {errors.username && (
                 <span className="error-message">{errors.username.message}</span>
@@ -82,13 +91,13 @@ const LoginPage = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="password">Пароль</label>
+              <label htmlFor="password">{t('public.login.password')}</label>
               <input
                 id="password"
                 type="password"
                 {...register('password')}
                 className={errors.password ? 'error' : ''}
-                placeholder="Введите пароль"
+                placeholder={t('public.login.passwordPlaceholder')}
               />
               {errors.password && (
                 <span className="error-message">{errors.password.message}</span>
@@ -100,7 +109,7 @@ const LoginPage = () => {
               className="btn-primary"
               disabled={isLoading}
             >
-              {isLoading ? 'Вход...' : 'Войти'}
+              {isLoading ? t('public.login.signingIn') : t('public.login.signIn')}
             </button>
           </form>
         </div>

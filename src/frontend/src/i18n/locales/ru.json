@@ -1,0 +1,53 @@
+{
+  "public": {
+    "dashboard": {
+      "title": "Статус системы",
+      "loading": "Загрузка...",
+      "privateDashboard": "Приватный дашборд",
+      "goToPrivateDashboard": "Перейти в приватный дашборд",
+      "totalServices": "Всего сервисов",
+      "working": "Работают",
+      "degraded": "Деградированы",
+      "problems": "Проблемы",
+      "availability": "Доступность",
+      "lastUpdated": "Последнее обновление",
+      "services": "Сервисы",
+      "noServices": "Нет доступных сервисов",
+      "ipBlocked": {
+        "warning": "Внимание",
+        "message": "Ваш IP-адрес ({ip}) находится в списке заблокированных.",
+        "blockedDate": "Дата блокировки: {date}",
+        "unknown": "неизвестен"
+      }
+    },
+    "login": {
+      "title": "X-Lab Status",
+      "subtitle": "Вход в систему",
+      "username": "Имя пользователя",
+      "password": "Пароль",
+      "usernamePlaceholder": "Введите имя пользователя",
+      "passwordPlaceholder": "Введите пароль",
+      "usernameRequired": "Имя пользователя обязательно",
+      "passwordRequired": "Пароль обязателен",
+      "signIn": "Войти",
+      "signingIn": "Вход...",
+      "success": "Успешный вход в систему",
+      "error": "Ошибка входа. Проверьте данные.",
+      "tooManyAttempts": "Слишком много неудачных попыток входа. Пожалуйста, подождите несколько минут и попробуйте снова.",
+      "serviceUnavailable": "Сервис временно недоступен. Пожалуйста, попробуйте позже."
+    },
+    "header": {
+      "signIn": "Вход"
+    },
+    "footer": {
+      "copyright": "© {year} X-Lab Status Service",
+      "website": "x-lab.by"
+    },
+    "backendUnavailable": {
+      "message": "Сервис временно недоступен. Пожалуйста, попробуйте позже.",
+      "autoRetry": "Автоматическая попытка переподключения каждые {seconds} сек...",
+      "retry": "Попробовать снова"
+    }
+  }
+}
+

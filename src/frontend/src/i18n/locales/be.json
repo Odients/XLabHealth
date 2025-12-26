@@ -1,0 +1,53 @@
+{
+  "public": {
+    "dashboard": {
+      "title": "Статус сістэмы",
+      "loading": "Загрузка...",
+      "privateDashboard": "Прыватны дашборд",
+      "goToPrivateDashboard": "Перайсці ў прыватны дашборд",
+      "totalServices": "Усяго сэрвісаў",
+      "working": "Працуюць",
+      "degraded": "Дэградаваныя",
+      "problems": "Праблемы",
+      "availability": "Даступнасць",
+      "lastUpdated": "Апошняе абнаўленне",
+      "services": "Сэрвісы",
+      "noServices": "Няма даступных сэрвісаў",
+      "ipBlocked": {
+        "warning": "Увага",
+        "message": "Ваш IP-адрас ({ip}) знаходзіцца ў спісе заблакіраваных.",
+        "blockedDate": "Дата блакіроўкі: {date}",
+        "unknown": "невядомы"
+      }
+    },
+    "login": {
+      "title": "X-Lab Status",
+      "subtitle": "Уваход у сістэму",
+      "username": "Імя карыстальніка",
+      "password": "Пароль",
+      "usernamePlaceholder": "Увядзіце імя карыстальніка",
+      "passwordPlaceholder": "Увядзіце пароль",
+      "usernameRequired": "Імя карыстальніка абавязковае",
+      "passwordRequired": "Пароль абавязковы",
+      "signIn": "Увайсці",
+      "signingIn": "Уваход...",
+      "success": "Паспяховы ўваход у сістэму",
+      "error": "Памылка ўваходу. Праверце даныя.",
+      "tooManyAttempts": "Занадта шмат няўдалых спроб ўваходу. Калі ласка, пачакайце некалькі хвілін і паспрабуйце зноў.",
+      "serviceUnavailable": "Сэрвіс часова недаступны. Калі ласка, паспрабуйце пазней."
+    },
+    "header": {
+      "signIn": "Уваход"
+    },
+    "footer": {
+      "copyright": "© {year} X-Lab Status Service",
+      "website": "x-lab.by"
+    },
+    "backendUnavailable": {
+      "message": "Сэрвіс часова недаступны. Калі ласка, паспрабуйце пазней.",
+      "autoRetry": "Аўтаматычная спроба перападключэння кожныя {seconds} сек...",
+      "retry": "Паспрабаваць зноў"
+    }
+  }
+}
+

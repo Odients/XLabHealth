@@ -1,0 +1,53 @@
+{
+  "public": {
+    "dashboard": {
+      "title": "Статус системи",
+      "loading": "Завантаження...",
+      "privateDashboard": "Приватний дашборд",
+      "goToPrivateDashboard": "Перейти до приватного дашборду",
+      "totalServices": "Всього сервісів",
+      "working": "Працюють",
+      "degraded": "Деградовані",
+      "problems": "Проблеми",
+      "availability": "Доступність",
+      "lastUpdated": "Останнє оновлення",
+      "services": "Сервіси",
+      "noServices": "Немає доступних сервісів",
+      "ipBlocked": {
+        "warning": "Увага",
+        "message": "Ваша IP-адреса ({ip}) знаходиться в списку заблокованих.",
+        "blockedDate": "Дата блокування: {date}",
+        "unknown": "невідомий"
+      }
+    },
+    "login": {
+      "title": "X-Lab Status",
+      "subtitle": "Вхід в систему",
+      "username": "Ім'я користувача",
+      "password": "Пароль",
+      "usernamePlaceholder": "Введіть ім'я користувача",
+      "passwordPlaceholder": "Введіть пароль",
+      "usernameRequired": "Ім'я користувача обов'язкове",
+      "passwordRequired": "Пароль обов'язковий",
+      "signIn": "Увійти",
+      "signingIn": "Вхід...",
+      "success": "Успішний вхід в систему",
+      "error": "Помилка входу. Перевірте дані.",
+      "tooManyAttempts": "Занадто багато невдалих спроб входу. Будь ласка, зачекайте кілька хвилин і спробуйте знову.",
+      "serviceUnavailable": "Сервіс тимчасово недоступний. Будь ласка, спробуйте пізніше."
+    },
+    "header": {
+      "signIn": "Вхід"
+    },
+    "footer": {
+      "copyright": "© {year} X-Lab Status Service",
+      "website": "x-lab.by"
+    },
+    "backendUnavailable": {
+      "message": "Сервіс тимчасово недоступний. Будь ласка, спробуйте пізніше.",
+      "autoRetry": "Автоматична спроба переподключення кожні {seconds} сек...",
+      "retry": "Спробувати знову"
+    }
+  }
+}
+
