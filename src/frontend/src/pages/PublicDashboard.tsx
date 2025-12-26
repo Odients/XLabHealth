@@ -11,6 +11,7 @@ import { HealthStatus } from '@/types';
 import { parseHealthStatus } from '@/utils/status';
 import { getClientIpAddress } from '@/utils/ip';
 import { isBackendUnavailable } from '@/utils/backend';
+import { formatDateTimeLocalized } from '@/utils/date';
 import './PublicDashboard.css';
 
 const PublicDashboard = () => {
@@ -108,7 +109,7 @@ const PublicDashboard = () => {
                 {ipStatus.blockedDate && (
                   <span className="ip-blocked-date">
                     {' '}{t('public.dashboard.ipBlocked.blockedDate', { 
-                      date: new Date(ipStatus.blockedDate).toLocaleString(i18n.language)
+                      date: formatDateTimeLocalized(ipStatus.blockedDate)
                     })}
                   </span>
                 )}
@@ -167,7 +168,7 @@ const PublicDashboard = () => {
         {status?.lastUpdated && (
           <div className="last-updated">
             {t('public.dashboard.lastUpdated')}:{' '}
-            {new Date(status.lastUpdated).toLocaleString(i18n.language)}
+            {formatDateTimeLocalized(status.lastUpdated)}
           </div>
         )}
 
