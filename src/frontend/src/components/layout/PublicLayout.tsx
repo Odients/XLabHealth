@@ -13,11 +13,17 @@ const PublicLayout = () => {
       </main>
       <footer className="bg-white border-t border-gray-200 py-6 mt-auto">
         <div className="container mx-auto px-4 text-center text-sm text-gray-600">
-          <p>{t('public.footer.copyright', { year: new Date().getFullYear() })}</p>
-          <p className="mt-1">
-            <a href="https://x-lab.by" target="_blank" rel="noopener noreferrer">
-              {t('public.footer.website')}
+          <p>
+            © {new Date().getFullYear()}{' '}
+            <a 
+              href={`https://${t('public.footer.website')}`} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-800 underline"
+            >
+              X-Lab
             </a>
+            {' '}Status Service
           </p>
         </div>
       </footer>
