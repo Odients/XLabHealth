@@ -104,172 +104,357 @@ const AnalyticsTables = ({ analytics }: AnalyticsTablesProps) => {
       </div>
 
       {activeTab === 'services' && (
-        <div className="table-container">
-          <table className="analytics-table">
-            <thead>
-              <tr>
-                <th>Сервис</th>
-                <th>Тип</th>
-                <th>Статус</th>
-                <th>Доступность</th>
-                <th>Ср. время отклика</th>
-                <th>Инциденты</th>
-                <th>Размер БД</th>
-              </tr>
-            </thead>
-            <tbody>
-              {analytics.services.map((service) => (
-                <tr key={service.serviceId}>
-                  <td>{service.serviceName}</td>
-                  <td>{getServiceTypeLabel(service.serviceType)}</td>
-                  <td>
-                    <span className={`status-badge status-${service.currentStatus ?? 'unknown'}`}>
-                      {getStatusLabel(service.currentStatus)}
-                    </span>
-                  </td>
-                  <td>{service.uptimePercentage.toFixed(2)}%</td>
-                  <td>{Math.round(service.responseTimeStatistics.average)} мс</td>
-                  <td>{service.incidentCount}</td>
-                  <td>
-                    {service.databaseSizeMetrics
-                      ? formatSize(service.databaseSizeMetrics.totalSizeMB)
-                      : '-'}
-                  </td>
+        <>
+          {/* Mobile card view */}
+          <div className="mobile-cards">
+            {analytics.services.map((service) => (
+              <div key={service.serviceId} className="service-card">
+                <div className="card-header">
+                  <h4 className="card-title">{service.serviceName}</h4>
+                  <span className={`status-badge status-${service.currentStatus ?? 'unknown'}`}>
+                    {getStatusLabel(service.currentStatus)}
+                  </span>
+                </div>
+                <div className="card-content">
+                  <div className="card-row">
+                    <span className="card-label">Тип:</span>
+                    <span className="card-value">{getServiceTypeLabel(service.serviceType)}</span>
+                  </div>
+                  <div className="card-row">
+                    <span className="card-label">Доступность:</span>
+                    <span className="card-value">{service.uptimePercentage.toFixed(2)}%</span>
+                  </div>
+                  <div className="card-row">
+                    <span className="card-label">Ср. время отклика:</span>
+                    <span className="card-value">{Math.round(service.responseTimeStatistics.average)} мс</span>
+                  </div>
+                  <div className="card-row">
+                    <span className="card-label">Инциденты:</span>
+                    <span className="card-value">{service.incidentCount}</span>
+                  </div>
+                  {service.databaseSizeMetrics && (
+                    <div className="card-row">
+                      <span className="card-label">Размер БД:</span>
+                      <span className="card-value">{formatSize(service.databaseSizeMetrics.totalSizeMB)}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop table view */}
+          <div className="table-container">
+            <table className="analytics-table">
+              <thead>
+                <tr>
+                  <th>Сервис</th>
+                  <th>Тип</th>
+                  <th>Статус</th>
+                  <th>Доступность</th>
+                  <th>Ср. время отклика</th>
+                  <th>Инциденты</th>
+                  <th>Размер БД</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {analytics.services.map((service) => (
+                  <tr key={service.serviceId}>
+                    <td>{service.serviceName}</td>
+                    <td>{getServiceTypeLabel(service.serviceType)}</td>
+                    <td>
+                      <span className={`status-badge status-${service.currentStatus ?? 'unknown'}`}>
+                        {getStatusLabel(service.currentStatus)}
+                      </span>
+                    </td>
+                    <td>{service.uptimePercentage.toFixed(2)}%</td>
+                    <td>{Math.round(service.responseTimeStatistics.average)} мс</td>
+                    <td>{service.incidentCount}</td>
+                    <td>
+                      {service.databaseSizeMetrics
+                        ? formatSize(service.databaseSizeMetrics.totalSizeMB)
+                        : '-'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
 
       {activeTab === 'incidents' && (
-        <div className="table-container">
-          <table className="analytics-table">
-            <thead>
-              <tr>
-                <th>Сервис</th>
-                <th>Начало</th>
-                <th>Окончание</th>
-                <th>Длительность</th>
-                <th>Статус до</th>
-                <th>Статус после</th>
-                <th>Причина</th>
-              </tr>
-            </thead>
-            <tbody>
-              {analytics.incidents.map((incident) => (
-                <tr key={incident.id} className={incident.isCritical ? 'critical' : ''}>
-                  <td>{incident.serviceName}</td>
-                  <td>{formatDateTimeWithTimezone(incident.startTime)}</td>
-                  <td>
-                    {incident.endTime
-                      ? formatDateTimeWithTimezone(incident.endTime)
-                      : 'В процессе'}
-                  </td>
-                  <td>{formatDuration(incident.durationMinutes)}</td>
-                  <td>
+        <>
+          {/* Mobile card view */}
+          <div className="mobile-cards">
+            {analytics.incidents.map((incident) => (
+              <div key={incident.id} className={`service-card ${incident.isCritical ? 'critical' : ''}`}>
+                <div className="card-header">
+                  <h4 className="card-title">{incident.serviceName}</h4>
+                  {incident.isCritical && (
+                    <span className="critical-badge">Критический</span>
+                  )}
+                </div>
+                <div className="card-content">
+                  <div className="card-row">
+                    <span className="card-label">Начало:</span>
+                    <span className="card-value">{formatDateTimeWithTimezone(incident.startTime)}</span>
+                  </div>
+                  <div className="card-row">
+                    <span className="card-label">Окончание:</span>
+                    <span className="card-value">
+                      {incident.endTime
+                        ? formatDateTimeWithTimezone(incident.endTime)
+                        : 'В процессе'}
+                    </span>
+                  </div>
+                  <div className="card-row">
+                    <span className="card-label">Длительность:</span>
+                    <span className="card-value">{formatDuration(incident.durationMinutes)}</span>
+                  </div>
+                  <div className="card-row">
+                    <span className="card-label">Статус до:</span>
                     <span className={`status-badge status-${incident.statusBefore}`}>
                       {getStatusLabel(incident.statusBefore)}
                     </span>
-                  </td>
-                  <td>
+                  </div>
+                  <div className="card-row">
+                    <span className="card-label">Статус после:</span>
                     <span className={`status-badge status-${incident.statusAfter}`}>
                       {getStatusLabel(incident.statusAfter)}
                     </span>
-                  </td>
-                  <td className="reason-cell" title={incident.reason}>
-                    {incident.reason ? (incident.reason.length > 50
-                      ? `${incident.reason.substring(0, 50)}...`
-                      : incident.reason) : '-'}
-                  </td>
+                  </div>
+                  {incident.reason && (
+                    <div className="card-row card-row-full">
+                      <span className="card-label">Причина:</span>
+                      <span className="card-value">{incident.reason}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop table view */}
+          <div className="table-container">
+            <table className="analytics-table">
+              <thead>
+                <tr>
+                  <th>Сервис</th>
+                  <th>Начало</th>
+                  <th>Окончание</th>
+                  <th>Длительность</th>
+                  <th>Статус до</th>
+                  <th>Статус после</th>
+                  <th>Причина</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {analytics.incidents.map((incident) => (
+                  <tr key={incident.id} className={incident.isCritical ? 'critical' : ''}>
+                    <td>{incident.serviceName}</td>
+                    <td>{formatDateTimeWithTimezone(incident.startTime)}</td>
+                    <td>
+                      {incident.endTime
+                        ? formatDateTimeWithTimezone(incident.endTime)
+                        : 'В процессе'}
+                    </td>
+                    <td>{formatDuration(incident.durationMinutes)}</td>
+                    <td>
+                      <span className={`status-badge status-${incident.statusBefore}`}>
+                        {getStatusLabel(incident.statusBefore)}
+                      </span>
+                    </td>
+                    <td>
+                      <span className={`status-badge status-${incident.statusAfter}`}>
+                        {getStatusLabel(incident.statusAfter)}
+                      </span>
+                    </td>
+                    <td className="reason-cell" title={incident.reason}>
+                      {incident.reason ? (incident.reason.length > 50
+                        ? `${incident.reason.substring(0, 50)}...`
+                        : incident.reason) : '-'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
 
       {activeTab === 'top' && (
         <div className="top-services">
           <div className="top-section">
             <h3>Топ-10 по доступности</h3>
-            <table className="analytics-table">
-              <thead>
-                <tr>
-                  <th>Сервис</th>
-                  <th>Доступность</th>
-                  <th>Инциденты</th>
-                </tr>
-              </thead>
-              <tbody>
-                {analytics.topServices.topByUptime.map((service) => (
-                  <tr key={service.serviceId}>
-                    <td>{service.serviceName}</td>
-                    <td>{service.uptimePercentage.toFixed(2)}%</td>
-                    <td>{service.incidentCount}</td>
+            
+            {/* Mobile card view */}
+            <div className="mobile-cards">
+              {analytics.topServices.topByUptime.map((service) => (
+                <div key={service.serviceId} className="service-card">
+                  <div className="card-header">
+                    <h4 className="card-title">{service.serviceName}</h4>
+                  </div>
+                  <div className="card-content">
+                    <div className="card-row">
+                      <span className="card-label">Доступность:</span>
+                      <span className="card-value">{service.uptimePercentage.toFixed(2)}%</span>
+                    </div>
+                    <div className="card-row">
+                      <span className="card-label">Инциденты:</span>
+                      <span className="card-value">{service.incidentCount}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop table view */}
+            <div className="table-container">
+              <table className="analytics-table">
+                <thead>
+                  <tr>
+                    <th>Сервис</th>
+                    <th>Доступность</th>
+                    <th>Инциденты</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {analytics.topServices.topByUptime.map((service) => (
+                    <tr key={service.serviceId}>
+                      <td>{service.serviceName}</td>
+                      <td>{service.uptimePercentage.toFixed(2)}%</td>
+                      <td>{service.incidentCount}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           <div className="top-section">
             <h3>Топ-10 по времени отклика</h3>
-            <table className="analytics-table">
-              <thead>
-                <tr>
-                  <th>Сервис</th>
-                  <th>Ср. время отклика</th>
-                  <th>P95</th>
-                </tr>
-              </thead>
-              <tbody>
-                {analytics.topServices.topByResponseTime.map((service) => (
-                  <tr key={service.serviceId}>
-                    <td>{service.serviceName}</td>
-                    <td>{Math.round(service.responseTimeStatistics.average)} мс</td>
-                    <td>{Math.round(service.responseTimeStatistics.p95)} мс</td>
+            
+            {/* Mobile card view */}
+            <div className="mobile-cards">
+              {analytics.topServices.topByResponseTime.map((service) => (
+                <div key={service.serviceId} className="service-card">
+                  <div className="card-header">
+                    <h4 className="card-title">{service.serviceName}</h4>
+                  </div>
+                  <div className="card-content">
+                    <div className="card-row">
+                      <span className="card-label">Ср. время отклика:</span>
+                      <span className="card-value">{Math.round(service.responseTimeStatistics.average)} мс</span>
+                    </div>
+                    <div className="card-row">
+                      <span className="card-label">P95:</span>
+                      <span className="card-value">{Math.round(service.responseTimeStatistics.p95)} мс</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop table view */}
+            <div className="table-container">
+              <table className="analytics-table">
+                <thead>
+                  <tr>
+                    <th>Сервис</th>
+                    <th>Ср. время отклика</th>
+                    <th>P95</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {analytics.topServices.topByResponseTime.map((service) => (
+                    <tr key={service.serviceId}>
+                      <td>{service.serviceName}</td>
+                      <td>{Math.round(service.responseTimeStatistics.average)} мс</td>
+                      <td>{Math.round(service.responseTimeStatistics.p95)} мс</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {analytics.topServices.topDatabaseBySize.length > 0 && (
             <div className="top-section">
               <h3>Топ-10 Database по размеру</h3>
-              <table className="analytics-table">
-                <thead>
-                  <tr>
-                    <th>Сервис</th>
-                    <th>Размер</th>
-                    <th>Использование</th>
-                    <th>Изменение</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {analytics.topServices.topDatabaseBySize.map((service) => (
-                    <tr key={service.serviceId}>
-                      <td>{service.serviceName}</td>
-                      <td>
-                        {service.databaseSizeMetrics
-                          ? formatSize(service.databaseSizeMetrics.totalSizeMB)
-                          : '-'}
-                      </td>
-                      <td>
-                        {service.databaseSizeMetrics
-                          ? `${service.databaseSizeMetrics.usagePercentage.toFixed(1)}%`
-                          : '-'}
-                      </td>
-                      <td>
-                        {service.databaseSizeMetrics?.sizeChangeMB
-                          ? `${service.databaseSizeMetrics.sizeChangeMB > 0 ? '+' : ''}${formatSize(service.databaseSizeMetrics.sizeChangeMB)}`
-                          : '-'}
-                      </td>
+              
+              {/* Mobile card view */}
+              <div className="mobile-cards">
+                {analytics.topServices.topDatabaseBySize.map((service) => (
+                  <div key={service.serviceId} className="service-card">
+                    <div className="card-header">
+                      <h4 className="card-title">{service.serviceName}</h4>
+                    </div>
+                    <div className="card-content">
+                      <div className="card-row">
+                        <span className="card-label">Размер:</span>
+                        <span className="card-value">
+                          {service.databaseSizeMetrics
+                            ? formatSize(service.databaseSizeMetrics.totalSizeMB)
+                            : '-'}
+                        </span>
+                      </div>
+                      <div className="card-row">
+                        <span className="card-label">Использование:</span>
+                        <span className="card-value">
+                          {service.databaseSizeMetrics
+                            ? `${service.databaseSizeMetrics.usagePercentage.toFixed(1)}%`
+                            : '-'}
+                        </span>
+                      </div>
+                      <div className="card-row">
+                        <span className="card-label">Изменение:</span>
+                        <span className="card-value">
+                          {service.databaseSizeMetrics?.sizeChangeMB
+                            ? `${service.databaseSizeMetrics.sizeChangeMB > 0 ? '+' : ''}${formatSize(service.databaseSizeMetrics.sizeChangeMB)}`
+                            : '-'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop table view */}
+              <div className="table-container">
+                <table className="analytics-table">
+                  <thead>
+                    <tr>
+                      <th>Сервис</th>
+                      <th>Размер</th>
+                      <th>Использование</th>
+                      <th>Изменение</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {analytics.topServices.topDatabaseBySize.map((service) => (
+                      <tr key={service.serviceId}>
+                        <td>{service.serviceName}</td>
+                        <td>
+                          {service.databaseSizeMetrics
+                            ? formatSize(service.databaseSizeMetrics.totalSizeMB)
+                            : '-'}
+                        </td>
+                        <td>
+                          {service.databaseSizeMetrics
+                            ? `${service.databaseSizeMetrics.usagePercentage.toFixed(1)}%`
+                            : '-'}
+                        </td>
+                        <td>
+                          {service.databaseSizeMetrics?.sizeChangeMB
+                            ? `${service.databaseSizeMetrics.sizeChangeMB > 0 ? '+' : ''}${formatSize(service.databaseSizeMetrics.sizeChangeMB)}`
+                            : '-'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </div>

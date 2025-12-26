@@ -10,6 +10,8 @@
   gap: 8px;
   margin-bottom: 24px;
   border-bottom: 1px solid #e5e7eb;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .tab {
@@ -35,6 +37,7 @@
 
 .table-container {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .analytics-table {
@@ -127,21 +130,159 @@
   color: #111827;
 }
 
+/* Mobile card styles */
+.mobile-cards {
+  display: none;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.service-card {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  transition: all 0.2s;
+}
+
+.service-card:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.service-card.critical {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  flex: 1;
+}
+
+.critical-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: #fee2e2;
+  color: #991b1b;
+  margin-left: 8px;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.card-row-full {
+  flex-direction: column;
+  gap: 4px;
+}
+
+.card-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+.card-value {
+  font-size: 14px;
+  color: #111827;
+  text-align: right;
+  word-break: break-word;
+}
+
+.card-row-full .card-value {
+  text-align: left;
+}
+
+/* Responsive breakpoints */
 @media (max-width: 768px) {
   .analytics-tables {
-    padding: 16px;
+    padding: 12px;
   }
 
   .tabs {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    gap: 4px;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+  }
+
+  .tab {
+    padding: 10px 14px;
+    font-size: 13px;
+    white-space: nowrap;
+    min-width: fit-content;
+  }
+
+  /* Show mobile cards, hide desktop tables */
+  .mobile-cards {
+    display: flex;
   }
 
   .table-container {
-    overflow-x: scroll;
+    display: none;
   }
 
-  .analytics-table {
-    min-width: 800px;
+  .top-section {
+    margin-bottom: 24px;
+  }
+
+  .top-section h3 {
+    font-size: 15px;
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+
+  .service-card {
+    padding: 14px;
+  }
+
+  .card-title {
+    font-size: 15px;
+  }
+
+  .card-label {
+    font-size: 12px;
+  }
+
+  .card-value {
+    font-size: 13px;
+  }
+}
+
+@media (min-width: 769px) {
+  /* Hide mobile cards, show desktop tables */
+  .mobile-cards {
+    display: none;
+  }
+
+  .table-container {
+    display: block;
   }
 }
 
