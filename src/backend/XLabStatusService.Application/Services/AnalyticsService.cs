@@ -521,43 +521,65 @@ public class AnalyticsService
                 var degradedMinutes = 0.0;
                 var unhealthyMinutes = 0.0;
                 var unknownMinutes = 0.0;
-                var checkIntervalMinutes = Math.Max(service.CheckInterval / 60.0, 1.0);
 
                 var sortedResults = serviceResults.OrderBy(r => r.CheckedAt).ToList();
+                
+                // Обрабатываем периоды между проверками
+                // Каждая проверка определяет статус до следующей проверки
+                var periodStart = fromDate;
+                
                 for (int i = 0; i < sortedResults.Count; i++)
                 {
                     var result = sortedResults[i];
-                    var nextCheckTime = i < sortedResults.Count - 1
+                    var periodEnd = i < sortedResults.Count - 1
                         ? sortedResults[i + 1].CheckedAt
                         : toDate;
-                    var duration = Math.Max((nextCheckTime - result.CheckedAt).TotalMinutes, checkIntervalMinutes);
-
+                    
                     // Исключаем время обслуживания из этого периода
                     var effectiveDuration = ExcludeMaintenanceTime(
-                        result.CheckedAt,
-                        nextCheckTime,
+                        periodStart,
+                        periodEnd,
                         maintenancePeriods);
 
-                    if (effectiveDuration <= 0)
+                    if (effectiveDuration > 0)
                     {
-                        continue; // Весь период был в режиме обслуживания
+                        switch (result.Status)
+                        {
+                            case HealthStatus.Healthy:
+                                healthyMinutes += effectiveDuration;
+                                break;
+                            case HealthStatus.Degraded:
+                                degradedMinutes += effectiveDuration;
+                                break;
+                            case HealthStatus.Unhealthy:
+                                unhealthyMinutes += effectiveDuration;
+                                break;
+                            case HealthStatus.Unknown:
+                                unknownMinutes += effectiveDuration;
+                                break;
+                        }
                     }
+                    
+                    periodStart = periodEnd;
+                }
 
-                    switch (result.Status)
-                    {
-                        case HealthStatus.Healthy:
-                            healthyMinutes += effectiveDuration;
-                            break;
-                        case HealthStatus.Degraded:
-                            degradedMinutes += effectiveDuration;
-                            break;
-                        case HealthStatus.Unhealthy:
-                            unhealthyMinutes += effectiveDuration;
-                            break;
-                        case HealthStatus.Unknown:
-                            unknownMinutes += effectiveDuration;
-                            break;
-                    }
+                // Проверяем, что сумма всех минут не превышает totalMinutes
+                var totalAccountedMinutes = healthyMinutes + degradedMinutes + unhealthyMinutes + unknownMinutes;
+                
+                // Если сумма не совпадает с totalMinutes (из-за округлений или исключения обслуживания),
+                // нормализуем значения пропорционально
+                if (totalAccountedMinutes > 0 && Math.Abs(totalAccountedMinutes - totalMinutes) > 0.01)
+                {
+                    var ratio = totalMinutes / totalAccountedMinutes;
+                    healthyMinutes *= ratio;
+                    degradedMinutes *= ratio;
+                    unhealthyMinutes *= ratio;
+                    unknownMinutes *= ratio;
+                }
+                else if (totalAccountedMinutes == 0)
+                {
+                    // Если нет данных вообще, считаем как "неизвестно"
+                    unknownMinutes = totalMinutes;
                 }
 
                 analytics.UptimePercentage = totalMinutes > 0
@@ -877,6 +899,7 @@ public class AnalyticsService
         HealthStatus? previousStatus = null;
         DateTime? incidentStart = null;
         HealthStatus? statusBefore = null;
+        string? incidentStartReason = null; // Причина начала инцидента
 
         foreach (var result in sortedResults)
         {
@@ -889,6 +912,8 @@ public class AnalyticsService
                     // Сохраняем статус предыдущего результата как статус "до" инцидента
                     // previousStatus содержит статус ДО текущего результата
                     statusBefore = previousStatus ?? HealthStatus.Healthy;
+                    // Сохраняем причину начала инцидента из результата, который начал инцидент
+                    incidentStartReason = result.Exception ?? result.Message;
                 }
             }
             // Конец инцидента (восстановление)
@@ -906,11 +931,12 @@ public class AnalyticsService
                     DurationMinutes = duration,
                     StatusBefore = statusBefore ?? HealthStatus.Healthy,
                     StatusAfter = result.Status,
-                    Reason = result.Exception ?? result.Message
+                    Reason = incidentStartReason // Используем причину начала инцидента
                 });
 
                 incidentStart = null;
                 statusBefore = null;
+                incidentStartReason = null;
             }
 
             // Всегда обновляем previousStatus в конце обработки каждого результата
@@ -934,7 +960,7 @@ public class AnalyticsService
                 DurationMinutes = duration,
                 StatusBefore = statusBefore ?? HealthStatus.Healthy,
                 StatusAfter = lastResult.Status,
-                Reason = lastResult.Exception ?? lastResult.Message
+                Reason = incidentStartReason // Используем причину начала инцидента
             });
         }
 

@@ -35,6 +35,19 @@ const AnalyticsTables = ({ analytics }: AnalyticsTablesProps) => {
     return `${days}д ${hrs}ч`;
   };
 
+  const formatUptimePercentage = (percentage: number | null | undefined): string => {
+    // Проверяем на null, undefined или NaN
+    if (percentage === null || percentage === undefined || isNaN(percentage)) {
+      return '0.00';
+    }
+    
+    // Ограничиваем значение от 0 до 100
+    const clamped = Math.max(0, Math.min(100, percentage));
+    
+    // Форматируем с 2 знаками после запятой
+    return clamped.toFixed(2);
+  };
+
   const getStatusLabel = (status: HealthStatus | number | string | null | undefined): string => {
     if (status === null || status === undefined) return 'Неизвестно';
     
@@ -122,7 +135,7 @@ const AnalyticsTables = ({ analytics }: AnalyticsTablesProps) => {
                   </div>
                   <div className="card-row">
                     <span className="card-label">Доступность:</span>
-                    <span className="card-value">{service.uptimePercentage.toFixed(2)}%</span>
+                    <span className="card-value">{formatUptimePercentage(service.uptimePercentage)}%</span>
                   </div>
                   <div className="card-row">
                     <span className="card-label">Ср. время отклика:</span>
@@ -167,7 +180,7 @@ const AnalyticsTables = ({ analytics }: AnalyticsTablesProps) => {
                         {getStatusLabel(service.currentStatus)}
                       </span>
                     </td>
-                    <td>{service.uptimePercentage.toFixed(2)}%</td>
+                    <td>{formatUptimePercentage(service.uptimePercentage)}%</td>
                     <td>{Math.round(service.responseTimeStatistics.average)} мс</td>
                     <td>{service.incidentCount}</td>
                     <td>
@@ -298,7 +311,7 @@ const AnalyticsTables = ({ analytics }: AnalyticsTablesProps) => {
                   <div className="card-content">
                     <div className="card-row">
                       <span className="card-label">Доступность:</span>
-                      <span className="card-value">{service.uptimePercentage.toFixed(2)}%</span>
+                      <span className="card-value">{formatUptimePercentage(service.uptimePercentage)}%</span>
                     </div>
                     <div className="card-row">
                       <span className="card-label">Инциденты:</span>
@@ -323,7 +336,7 @@ const AnalyticsTables = ({ analytics }: AnalyticsTablesProps) => {
                   {analytics.topServices.topByUptime.map((service) => (
                     <tr key={service.serviceId}>
                       <td>{service.serviceName}</td>
-                      <td>{service.uptimePercentage.toFixed(2)}%</td>
+                      <td>{formatUptimePercentage(service.uptimePercentage)}%</td>
                       <td>{service.incidentCount}</td>
                     </tr>
                   ))}
