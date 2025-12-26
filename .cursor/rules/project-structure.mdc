@@ -1,0 +1,865 @@
+---
+alwaysApply: true
+---
+
+# Project Structure and Naming Conventions
+
+This rule defines the organization of the X-Lab Status Service project, including folder structure, naming conventions, and resource placement guidelines.
+
+## Project Type
+
+**Full-stack application** consisting of:
+- **Backend**: ASP.NET Core 8.0+ Web API with C# 12, Entity Framework Core, Quartz.NET, and SignalR
+- **Frontend**: React 18+ with TypeScript, Material-UI (or Ant Design), React Router, and SignalR Client
+
+**Note**: Backend and Frontend can be in the same repository (monorepo) or separate repositories. This structure supports both approaches.
+
+## Root Directory Structure
+
+### Monorepo Structure (Recommended)
+
+```
+x-lab-status-service/
+├── .cursor/                    # Cursor IDE configuration and rules
+│   └── rules/                 # AI assistant rules
+├── src/                       # Source code directory
+│   ├── backend/               # Backend projects (ASP.NET Core)
+│   │   ├── XLabStatusService.Api/        # Main API project
+│   │   ├── XLabStatusService.Core/      # Core domain logic
+│   │   ├── XLabStatusService.Infrastructure/  # Infrastructure layer
+│   │   └── XLabStatusService.Application/    # Application layer
+│   └── frontend/              # Frontend project (React)
+│       ├── src/               # React source code
+│       ├── public/            # Static assets
+│       ├── package.json
+│       └── tsconfig.json
+├── tests/                       # Test projects
+│   ├── backend/               # Backend tests
+│   │   ├── XLabStatusService.Api.Tests/
+│   │   ├── XLabStatusService.Core.Tests/
+│   │   └── XLabStatusService.Infrastructure.Tests/
+│   └── frontend/              # Frontend tests
+│       └── XLabStatusService.Frontend.Tests/
+├── docs/                        # Project documentation
+│   ├── TZ-Backend.md            # Backend technical specification
+│   ├── TZ-Frontend.md           # Frontend technical specification
+│   └── TZ.md                    # General overview
+├── .gitignore                   # Git ignore patterns
+├── XLabStatusService.sln        # Solution file (Backend)
+└── README.md                    # Project README
+```
+
+### Separate Repositories Structure
+
+If using separate repositories:
+
+**Backend Repository**:
+```
+x-lab-status-service-backend/
+├── src/
+│   ├── XLabStatusService.Api/
+│   ├── XLabStatusService.Core/
+│   ├── XLabStatusService.Infrastructure/
+│   └── XLabStatusService.Application/
+├── tests/
+└── XLabStatusService.sln
+```
+
+**Frontend Repository**:
+```
+x-lab-status-service-frontend/
+├── src/
+├── public/
+├── package.json
+└── tsconfig.json
+```
+
+**Note**: This document describes the monorepo structure. Backend follows Clean Architecture / Onion Architecture principles.
+
+## Naming Conventions
+
+### Folders
+
+**Rule**: Use PascalCase for all folder names (following .NET conventions)
+
+**Examples**:
+- ✅ `Controllers/`
+- ✅ `HealthChecks/`
+- ✅ `DataTransferObjects/`
+- ❌ `controllers/`
+- ❌ `health-checks/`
+- ❌ `dataTransferObjects/`
+
+### Files
+
+#### C# Classes and Interfaces
+**Rule**: Use PascalCase with `.cs` extension
+
+**Examples**:
+- ✅ `ServiceController.cs`
+- ✅ `HealthCheckService.cs`
+- ✅ `IServiceRepository.cs`
+- ❌ `serviceController.cs`
+- ❌ `health-check-service.cs`
+
+#### Configuration Files
+**Rule**: Use lowercase kebab-case or follow tool conventions
+
+**Examples**:
+- ✅ `appsettings.json`
+- ✅ `appsettings.Development.json`
+- ✅ `appsettings.Production.json`
+- ✅ `Dockerfile`
+- ✅ `.dockerignore`
+
+### Variables and Functions
+
+#### Variables
+**Rule**: Use camelCase
+
+**Examples**:
+- ✅ `var serviceId = Guid.NewGuid();`
+- ✅ `var responseTime = 150;`
+- ❌ `var ServiceId = Guid.NewGuid();`
+- ❌ `var response_time = 150;`
+
+#### Constants
+**Rule**: Use UPPER_SNAKE_CASE for true constants
+
+**Examples**:
+- ✅ `private const int MAX_RETRY_COUNT = 3;`
+- ✅ `private const string DEFAULT_TIMEOUT = "5000";`
+- ❌ `private const int MaxRetryCount = 3;`
+
+#### Methods
+**Rule**: Use PascalCase, start with verb
+
+**Examples**:
+- ✅ `public async Task<ServiceDto> GetServiceByIdAsync(Guid id)`
+- ✅ `private void ValidateService(Service service)`
+- ❌ `public async Task<ServiceDto> serviceById(Guid id)`
+- ❌ `private void service_validation(Service service)`
+
+#### Properties
+**Rule**: Use PascalCase
+
+**Examples**:
+- ✅ `public Guid Id { get; set; }`
+- ✅ `public string Name { get; set; }`
+- ❌ `public Guid id { get; set; }`
+
+## Directory-Specific Guidelines
+
+### `/src/XLabStatusService.Api` - API Layer
+
+Main ASP.NET Core Web API project.
+
+**Structure**:
+```
+XLabStatusService.Api/
+├── Controllers/
+│   ├── PublicController.cs          # Public endpoints (no auth)
+│   ├── ServicesController.cs         # Private endpoints (with auth)
+│   ├── AuthController.cs            # Authentication endpoints
+│   └── WebhooksController.cs        # Webhooks management
+├── Hubs/
+│   └── StatusHub.cs                 # SignalR hub for real-time updates
+├── Middleware/
+│   ├── ExceptionHandlingMiddleware.cs
+│   ├── RequestLoggingMiddleware.cs
+│   └── RateLimitingMiddleware.cs
+├── Filters/
+│   ├── AuthorizeAdminAttribute.cs
+│   └── ValidateModelAttribute.cs
+├── Program.cs                       # Application entry point
+├── appsettings.json
+├── appsettings.Development.json
+└── XLabStatusService.Api.csproj
+```
+
+**Naming Rules**:
+- Controllers: `{Entity}Controller.cs` (e.g., `ServicesController.cs`)
+- Hubs: `{Name}Hub.cs` (e.g., `StatusHub.cs`)
+- Middleware: `{Purpose}Middleware.cs` (e.g., `ExceptionHandlingMiddleware.cs`)
+- Filters: `{Purpose}Attribute.cs` (e.g., `AuthorizeAdminAttribute.cs`)
+
+**Controller Example**:
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+public class ServicesController : ControllerBase
+{
+    private readonly IServiceService _serviceService;
+    
+    public ServicesController(IServiceService serviceService)
+    {
+        _serviceService = serviceService;
+    }
+    
+    [HttpGet]
+    [Authorize(Roles = "Admin,Viewer")]
+    public async Task<ActionResult<IEnumerable<ServiceDto>>> GetServices()
+    {
+        var services = await _serviceService.GetAllAsync();
+        return Ok(services);
+    }
+}
+```
+
+### `/src/XLabStatusService.Core` - Domain Layer
+
+Core business entities and interfaces.
+
+**Structure**:
+```
+XLabStatusService.Core/
+├── Entities/
+│   ├── Service.cs
+│   ├── HealthCheckResult.cs
+│   ├── ServiceConfiguration.cs
+│   ├── User.cs
+│   └── RefreshToken.cs
+├── Interfaces/
+│   ├── IServiceRepository.cs
+│   ├── IHealthCheckService.cs
+│   └── IUserService.cs
+├── Enums/
+│   ├── ServiceType.cs
+│   └── HealthStatus.cs
+├── Exceptions/
+│   ├── ServiceNotFoundException.cs
+│   └── UnauthorizedException.cs
+└── XLabStatusService.Core.csproj
+```
+
+**Naming Rules**:
+- Entities: PascalCase (e.g., `Service.cs`, `HealthCheckResult.cs`)
+- Interfaces: `I{Name}.cs` (e.g., `IServiceRepository.cs`)
+- Enums: PascalCase (e.g., `ServiceType.cs`, `HealthStatus.cs`)
+- Exceptions: `{Name}Exception.cs` (e.g., `ServiceNotFoundException.cs`)
+
+**Entity Example**:
+```csharp
+public class Service
+{
+    public Guid Id { get; set; }
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public string Url { get; set; }
+    public ServiceType Type { get; set; }
+    public int CheckInterval { get; set; }
+    public bool IsEnabled { get; set; }
+    public bool IsPublic { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    
+    // Navigation properties
+    public virtual ICollection<HealthCheckResult> HealthCheckResults { get; set; }
+    public virtual ServiceConfiguration Configuration { get; set; }
+}
+```
+
+### `/src/XLabStatusService.Infrastructure` - Infrastructure Layer
+
+Data access, external services, and infrastructure concerns.
+
+**Structure**:
+```
+XLabStatusService.Infrastructure/
+├── Data/
+│   ├── ApplicationDbContext.cs
+│   ├── Configurations/
+│   │   ├── ServiceConfiguration.cs
+│   │   ├── HealthCheckResultConfiguration.cs
+│   │   └── UserConfiguration.cs
+│   └── Migrations/                # EF Core migrations
+├── Repositories/
+│   ├── ServiceRepository.cs
+│   ├── HealthCheckResultRepository.cs
+│   └── UserRepository.cs
+├── Services/
+│   ├── HealthCheckService.cs
+│   ├── HttpHealthCheckProvider.cs
+│   ├── DatabaseHealthCheckProvider.cs
+│   ├── RedisHealthCheckProvider.cs
+│   └── SignalRNotificationService.cs
+├── Jobs/
+│   ├── HealthCheckJob.cs
+│   └── CleanupJob.cs
+├── HealthChecks/
+│   └── ServiceHealthCheck.cs
+├── SignalR/
+│   └── SignalRServiceExtensions.cs
+├── Extensions/
+│   ├── ServiceCollectionExtensions.cs
+│   └── ApplicationBuilderExtensions.cs
+└── XLabStatusService.Infrastructure.csproj
+```
+
+**Naming Rules**:
+- DbContext: `{Project}DbContext.cs` (e.g., `ApplicationDbContext.cs`)
+- Configurations: `{Entity}Configuration.cs` (e.g., `ServiceConfiguration.cs`)
+- Repositories: `{Entity}Repository.cs` (e.g., `ServiceRepository.cs`)
+- Services: `{Purpose}Service.cs` (e.g., `HealthCheckService.cs`)
+- Jobs: `{Purpose}Job.cs` (e.g., `HealthCheckJob.cs`)
+
+**Repository Example**:
+```csharp
+public class ServiceRepository : IServiceRepository
+{
+    private readonly ApplicationDbContext _context;
+    
+    public ServiceRepository(ApplicationDbContext context)
+    {
+        _context = context;
+    }
+    
+    public async Task<Service?> GetByIdAsync(Guid id)
+    {
+        return await _context.Services
+            .Include(s => s.Configuration)
+            .FirstOrDefaultAsync(s => s.Id == id);
+    }
+    
+    public async Task<IEnumerable<Service>> GetPublicServicesAsync()
+    {
+        return await _context.Services
+            .Where(s => s.IsPublic && s.IsEnabled)
+            .ToListAsync();
+    }
+}
+```
+
+### `/src/XLabStatusService.Application` - Application Layer
+
+DTOs, mappings, validators, and application services.
+
+**Structure**:
+```
+XLabStatusService.Application/
+├── DTOs/
+│   ├── ServiceDto.cs
+│   ├── PublicServiceDto.cs
+│   ├── ServiceCreateDto.cs
+│   ├── ServiceUpdateDto.cs
+│   ├── HealthCheckResultDto.cs
+│   └── UserDto.cs
+├── Mappings/
+│   └── MappingProfile.cs          # AutoMapper profile
+├── Validators/
+│   ├── ServiceCreateDtoValidator.cs
+│   └── ServiceUpdateDtoValidator.cs
+├── Services/
+│   ├── ServiceService.cs
+│   └── AnalyticsService.cs
+└── XLabStatusService.Application.csproj
+```
+
+**Naming Rules**:
+- DTOs: `{Entity}Dto.cs` or `{Purpose}Dto.cs` (e.g., `ServiceDto.cs`, `ServiceCreateDto.cs`)
+- Mappings: `{Purpose}Profile.cs` (e.g., `MappingProfile.cs`)
+- Validators: `{Dto}Validator.cs` (e.g., `ServiceCreateDtoValidator.cs`)
+- Services: `{Entity}Service.cs` (e.g., `ServiceService.cs`)
+
+**DTO Example**:
+```csharp
+public class ServiceDto
+{
+    public Guid Id { get; set; }
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public string Url { get; set; }
+    public ServiceType Type { get; set; }
+    public int CheckInterval { get; set; }
+    public bool IsEnabled { get; set; }
+    public bool IsPublic { get; set; }
+    public HealthStatus? LastStatus { get; set; }
+    public DateTime? LastCheckedAt { get; set; }
+}
+
+public class PublicServiceDto
+{
+    public Guid Id { get; set; }
+    public string Name { get; set; }
+    public HealthStatus Status { get; set; }
+    public DateTime? LastCheckedAt { get; set; }
+}
+```
+
+### `/tests` - Test Projects
+
+Unit and integration tests.
+
+**Structure**:
+```
+tests/
+├── XLabStatusService.Api.Tests/
+│   ├── Controllers/
+│   │   ├── ServicesControllerTests.cs
+│   │   └── PublicControllerTests.cs
+│   └── XLabStatusService.Api.Tests.csproj
+├── XLabStatusService.Core.Tests/
+│   ├── Entities/
+│   └── XLabStatusService.Core.Tests.csproj
+└── XLabStatusService.Infrastructure.Tests/
+    ├── Repositories/
+    ├── Services/
+    └── XLabStatusService.Infrastructure.Tests.csproj
+```
+
+**Naming Rules**:
+- Test files: `{Class}Tests.cs` (e.g., `ServicesControllerTests.cs`)
+- Test methods: `{Method}_Should_{ExpectedBehavior}_When_{Condition}` or use descriptive names
+
+**Test Example**:
+```csharp
+public class ServicesControllerTests
+{
+    [Fact]
+    public async Task GetServices_Should_ReturnAllServices_When_UserIsAuthenticated()
+    {
+        // Arrange
+        // Act
+        // Assert
+    }
+}
+```
+
+## Project-Specific Structure
+
+### Health Check Providers
+
+**Location**: `XLabStatusService.Infrastructure/Services/HealthChecks/`
+
+**Structure**:
+```
+Services/
+├── HealthCheckService.cs              # Main health check orchestrator
+├── HttpHealthCheckProvider.cs         # HTTP endpoint checks
+├── DatabaseHealthCheckProvider.cs     # MS SQL Server checks
+├── RedisHealthCheckProvider.cs        # Redis checks
+└── IHealthCheckProvider.cs            # Interface in Core
+```
+
+### Quartz.NET Jobs
+
+**Location**: `XLabStatusService.Infrastructure/Jobs/`
+
+**Structure**:
+```
+Jobs/
+├── HealthCheckJob.cs                  # Main job for checking services
+├── CleanupJob.cs                      # Job for cleaning old data
+└── IJobFactory.cs                     # Custom job factory if needed
+```
+
+### SignalR Hubs
+
+**Location**: `XLabStatusService.Api/Hubs/`
+
+**Structure**:
+```
+Hubs/
+├── StatusHub.cs                       # Main hub for status updates
+└── HubExtensions.cs                   # Extension methods for hubs
+```
+
+## Configuration Files
+
+### appsettings.json Structure
+
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Data Source=...;Initial Catalog=XLabHealth;...",
+    "Quartz": "Data Source=...;Initial Catalog=XLabHealth;..."
+  },
+  "Jwt": {
+    "SecretKey": "...",
+    "Issuer": "...",
+    "Audience": "...",
+    "AccessTokenExpirationMinutes": 30,
+    "RefreshTokenExpirationDays": 7
+  },
+  "Quartz": {
+    "Scheduler": {
+      "InstanceName": "XLabStatusServiceScheduler"
+    },
+    "ThreadPool": {
+      "ThreadCount": 10
+    },
+    "JobStore": {
+      "Type": "Quartz.Impl.AdoJobStore.JobStoreTX, Quartz",
+      "Provider": "SqlServer",
+      "ConnectionString": "...",
+      "TablePrefix": "QRTZ_",
+      "Clustered": true
+    }
+  },
+  "Serilog": {
+    "MinimumLevel": "Information"
+  }
+}
+```
+
+## File Organization Best Practices
+
+### Clean Architecture Layers
+
+**Dependencies** (from outer to inner):
+- **Api** → Application → Infrastructure → Core
+- **Application** → Core
+- **Infrastructure** → Core
+- **Core** → No dependencies (pure domain)
+
+### Dependency Injection
+
+Register services in `Program.cs` or extension methods:
+
+```csharp
+// In ServiceCollectionExtensions.cs
+public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+{
+    services.AddScoped<IServiceService, ServiceService>();
+    services.AddScoped<IHealthCheckService, HealthCheckService>();
+    return services;
+}
+```
+
+### Entity Framework Core
+
+- **DbContext**: `Infrastructure/Data/ApplicationDbContext.cs`
+- **Configurations**: `Infrastructure/Data/Configurations/`
+- **Migrations**: `Infrastructure/Data/Migrations/`
+
+### Quartz.NET Integration
+
+- **Jobs**: `Infrastructure/Jobs/`
+- **Configuration**: `appsettings.json` → `Quartz` section
+- **Registration**: In `Program.cs` via `AddQuartz()`
+
+## File Size Guidelines
+
+### Maximum File Size
+
+- Controllers: **300 lines** (excluding tests)
+- Services: **400 lines**
+- Repositories: **300 lines**
+- Entities: **200 lines**
+- DTOs: **100 lines**
+
+### When to Split
+
+Split files when:
+- File exceeds size guidelines
+- Multiple unrelated responsibilities
+- Complex class with multiple concerns
+- Service handling multiple entities
+
+## Documentation Requirements
+
+### XML Documentation Comments
+
+Add XML comments to all public APIs:
+
+```csharp
+/// <summary>
+/// Gets all services with their current status.
+/// </summary>
+/// <returns>List of services with status information.</returns>
+/// <response code="200">Returns the list of services.</response>
+/// <response code="401">If the user is not authenticated.</response>
+[HttpGet]
+[Authorize]
+public async Task<ActionResult<IEnumerable<ServiceDto>>> GetServices()
+{
+    // ...
+}
+```
+
+### Entity Documentation
+
+Document entities with XML comments:
+
+```csharp
+/// <summary>
+/// Represents a service being monitored.
+/// </summary>
+public class Service
+{
+    /// <summary>
+    /// Unique identifier of the service.
+    /// </summary>
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Name of the service.
+    /// </summary>
+    public string Name { get; set; }
+}
+```
+
+## Git Ignore Patterns
+
+Files and folders to exclude from version control:
+
+```gitignore
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider
+.idea/
+*.sln.iml
+
+# User-specific files
+*.rsuser
+*.user
+*.userosscache
+*.sln.docstates
+
+# Environment files
+appsettings.Development.json
+appsettings.Production.json
+*.env
+*.env.local
+
+# Database
+*.mdf
+*.ldf
+*.ndf
+
+# Test results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.trx
+
+# Frontend (Node.js/React)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp
+.pnp.js
+
+# Frontend build output
+.next/
+out/
+dist/
+build/
+
+# Frontend environment files
+.env
+.env.local
+.env.*.local
+
+## Enforcement
+
+### AI Assistant Responsibilities
+
+The AI assistant should:
+- **Backend**: Follow .NET naming conventions (PascalCase for classes, camelCase for variables)
+- **Frontend**: Follow React/TypeScript naming conventions (PascalCase for components, camelCase for functions)
+- Suggest Clean Architecture patterns for backend
+- Maintain separation of concerns between layers
+- Use dependency injection patterns in backend
+- Follow async/await patterns for I/O operations
+- Maintain consistency between backend and frontend (API contracts, types)
+- Alert user if naming conventions are violated
+
+### Developer Responsibilities
+
+Developers should:
+- Review this document before starting new features
+- **Backend**: Follow Clean Architecture principles
+- **Backend**: Use dependency injection for all services
+- **Backend**: Write unit tests for business logic
+- **Backend**: Use async/await for all I/O operations
+- **Backend**: Maintain XML documentation comments
+- **Frontend**: Follow React best practices and patterns
+- **Frontend**: Write unit tests for components and hooks
+- **Frontend**: Maintain TypeScript type safety
+- **Both**: Keep API contracts synchronized between backend and frontend
+
+## Frontend-Specific Guidelines
+
+### React Component Structure
+
+**Component Organization**:
+```
+components/
+├── ui/                          # Reusable UI components
+│   ├── Button/
+│   │   ├── Button.tsx
+│   │   ├── Button.types.ts
+│   │   └── index.ts
+│   └── StatusIndicator/
+│       ├── StatusIndicator.tsx
+│       └── StatusIndicator.types.ts
+├── dashboard/                   # Feature-specific components
+│   ├── PublicDashboard/
+│   │   ├── PublicDashboard.tsx
+│   │   └── PublicDashboard.types.ts
+│   └── PrivateDashboard/
+│       └── PrivateDashboard.tsx
+```
+
+### API Integration
+
+**Service Layer Structure**:
+```typescript
+// services/api.ts
+import axios from 'axios';
+
+export const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://api.x-lab.by',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Interceptors for auth
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('accessToken');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+```
+
+### Routing Structure
+
+**Public Routes** (no authentication):
+- `/` - Public dashboard
+
+**Private Routes** (require authentication):
+- `/login` - Login page
+- `/dashboard` - Private dashboard
+- `/services` - Services list
+- `/services/:id` - Service details
+- `/admin` - Admin panel (requires Admin role)
+
+### State Management
+
+**Recommended**: React Context API or Zustand for global state
+
+```typescript
+// context/AuthContext.tsx
+export const AuthContext = createContext<AuthContextType | null>(null);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
+  // ... auth logic
+  
+  return (
+    <AuthContext.Provider value={{ user, isAuthenticated, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+```
+
+### SignalR Integration
+
+```typescript
+// hooks/useSignalR.tsx
+import { useEffect } from 'react';
+import * as signalR from '@microsoft/signalr';
+
+export function useSignalR(serviceId?: string) {
+  useEffect(() => {
+    const connection = new signalR.HubConnectionBuilder()
+      .withUrl('/hubs/status')
+      .build();
+    
+    connection.start();
+    
+    if (serviceId) {
+      connection.invoke('SubscribeToService', serviceId);
+    } else {
+      connection.invoke('SubscribeToAllServices');
+    }
+    
+    connection.on('ServiceStatusChanged', (data) => {
+      // Handle status change
+    });
+    
+    return () => {
+      connection.stop();
+    };
+  }, [serviceId]);
+}
+```
+
+## Development Workflow
+
+### Running the Application
+
+**Backend**:
+```bash
+cd src/backend/XLabStatusService.Api
+dotnet run
+```
+
+**Frontend**:
+```bash
+cd src/frontend
+npm install
+npm run dev
+```
+
+### Building for Production
+
+**Backend**:
+```bash
+dotnet publish -c Release
+```
+
+**Frontend**:
+```bash
+npm run build
+```
+
+## References
+
+### External Documentation
+
+**Backend**:
+- **ASP.NET Core Documentation**: https://learn.microsoft.com/en-us/aspnet/core/
+- **Entity Framework Core**: https://learn.microsoft.com/en-us/ef/core/
+- **Quartz.NET**: https://www.quartz-scheduler.net/
+- **SignalR**: https://learn.microsoft.com/en-us/aspnet/core/signalr/introduction
+- **C# Coding Conventions**: https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/coding-style/coding-conventions
+
+**Frontend**:
+- **React Documentation**: https://react.dev/
+- **TypeScript Documentation**: https://www.typescriptlang.org/docs/
+- **React Router**: https://reactrouter.com/
+- **Material-UI**: https://mui.com/
+- **SignalR Client**: https://www.npmjs.com/package/@microsoft/signalr
+
+### Project Documentation
+- **Backend TZ**: `docs/TZ-Backend.md`
+- **Frontend TZ**: `docs/TZ-Frontend.md`
+- **General TZ**: `docs/TZ.md`

@@ -1,0 +1,77 @@
+.analytics-page {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.analytics-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.analytics-header h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.analytics-period-selector {
+  display: flex;
+  gap: 8px;
+}
+
+.period-btn {
+  padding: 8px 16px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.period-btn:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.period-btn.active {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.analytics-loading,
+.analytics-error {
+  text-align: center;
+  padding: 48px;
+  font-size: 16px;
+  color: #6b7280;
+}
+
+.analytics-error {
+  color: #ef4444;
+}
+
+@media (max-width: 768px) {
+  .analytics-page {
+    padding: 16px;
+  }
+
+  .analytics-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .analytics-period-selector {
+    width: 100%;
+  }
+
+  .period-btn {
+    flex: 1;
+  }
+}
+

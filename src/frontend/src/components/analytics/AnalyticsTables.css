@@ -1,0 +1,147 @@
+.analytics-tables {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tab {
+  padding: 12px 24px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.tab:hover {
+  color: #111827;
+}
+
+.tab.active {
+  color: #3b82f6;
+  border-bottom-color: #3b82f6;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.analytics-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.analytics-table thead {
+  background: #f9fafb;
+}
+
+.analytics-table th {
+  padding: 12px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.analytics-table td {
+  padding: 12px;
+  border-top: 1px solid #e5e7eb;
+  font-size: 14px;
+  color: #111827;
+}
+
+.analytics-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.analytics-table tbody tr.critical {
+  background: #fef2f2;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-badge.status-0,
+.status-badge.status-Healthy,
+.status-badge.status-healthy {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge.status-1,
+.status-badge.status-Degraded,
+.status-badge.status-degraded {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-badge.status-2,
+.status-badge.status-Unhealthy,
+.status-badge.status-unhealthy {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-badge.status-3,
+.status-badge.status-Unknown,
+.status-badge.status-unknown {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.reason-cell {
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.top-services {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.top-section h3 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+@media (max-width: 768px) {
+  .analytics-tables {
+    padding: 16px;
+  }
+
+  .tabs {
+    flex-wrap: wrap;
+  }
+
+  .table-container {
+    overflow-x: scroll;
+  }
+
+  .analytics-table {
+    min-width: 800px;
+  }
+}
+

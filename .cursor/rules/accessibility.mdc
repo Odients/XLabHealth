@@ -1,0 +1,656 @@
+---
+description: Text and Background Color Contrast
+alwaysApply: false
+---
+# Accessibility and UI Rules
+
+## Color Contrast and Text Visibility
+
+### Critical Rule: Text and Background Color Contrast
+
+**NEVER use the same or similar colors for text and background** - this makes content invisible or unreadable.
+
+#### ❌ BAD Examples - Invisible or Low Contrast Text
+
+```tsx
+// Same color - text is invisible
+<div className="bg-gray-100 text-gray-100">
+  Invisible text
+</div>
+
+// Very low contrast - hard to read
+<div className="bg-gray-200 text-gray-300">
+  Low contrast text
+</div>
+
+// White on light background
+<div className="bg-gray-50 text-white">
+  Poor visibility
+</div>
+
+// Dark text on dark background
+<div className="bg-gray-900 text-gray-800">
+  Invisible text
+</div>
+```
+
+#### ✅ GOOD Examples - High Contrast Text
+
+```tsx
+// Dark text on light background
+<div className="bg-white text-gray-900">
+  High contrast text
+</div>
+
+<div className="bg-gray-50 text-gray-900">
+  Good visibility
+</div>
+
+// Light text on dark background
+<div className="bg-gray-900 text-white">
+  High contrast text
+</div>
+
+<div className="bg-blue-600 text-white">
+  Good visibility
+</div>
+
+// Medium backgrounds need appropriate text color
+<div className="bg-gray-500 text-white">
+  Light text on medium background
+</div>
+
+<div className="bg-gray-400 text-gray-900">
+  Dark text on medium background
+</div>
+```
+
+### Contrast Ratio Guidelines (WCAG)
+
+Follow Web Content Accessibility Guidelines (WCAG) for contrast ratios:
+
+- **Normal text (< 18pt)**: Minimum contrast ratio of **4.5:1** (Level AA)
+- **Large text (≥ 18pt or 14pt bold)**: Minimum contrast ratio of **3:1** (Level AA)
+- **Enhanced (Level AAA)**: 
+  - Normal text: **7:1**
+  - Large text: **4.5:1**
+
+### Tailwind Color Combinations
+
+#### Light Backgrounds (50-300)
+Use **dark text** (600-900):
+```tsx
+<div className="bg-gray-50 text-gray-900">   // ✅ Good
+<div className="bg-blue-100 text-blue-900">  // ✅ Good
+<div className="bg-red-100 text-red-800">    // ✅ Good
+```
+
+#### Medium Backgrounds (400-600)
+Use **white or very dark text**:
+```tsx
+<div className="bg-gray-500 text-white">     // ✅ Good
+<div className="bg-blue-600 text-white">     // ✅ Good
+<div className="bg-red-500 text-white">      // ✅ Good
+```
+
+#### Dark Backgrounds (700-900)
+Use **white or very light text** (50-100):
+```tsx
+<div className="bg-gray-900 text-white">     // ✅ Good
+<div className="bg-blue-800 text-blue-50">   // ✅ Good
+<div className="bg-red-900 text-red-100">    // ✅ Good
+```
+
+### Common Patterns in This Project
+
+#### Buttons
+```tsx
+// Primary button - dark background, white text
+<button className="bg-blue-600 text-white hover:bg-blue-700">
+  Primary Action
+</button>
+
+// Secondary button - light background, dark text
+<button className="bg-gray-100 text-gray-900 hover:bg-gray-200">
+  Secondary Action
+</button>
+
+// Danger button - red background, white text
+<button className="bg-red-600 text-white hover:bg-red-700">
+  Delete
+</button>
+```
+
+#### Cards
+```tsx
+// White card with dark text
+<div className="bg-white rounded-lg shadow p-4">
+  <h3 className="text-gray-900 font-bold">Title</h3>
+  <p className="text-gray-600">Description text</p>
+</div>
+
+// Colored card with appropriate text
+<div className="bg-blue-600 rounded-lg shadow p-4">
+  <h3 className="text-white font-bold">Title</h3>
+  <p className="text-blue-100">Description text</p>
+</div>
+```
+
+#### Status Indicators
+```tsx
+// Success - green background, appropriate text
+<div className="bg-green-100 text-green-800 border border-green-300 rounded px-2 py-1">
+  Success
+</div>
+
+// Warning - yellow background, dark text
+<div className="bg-yellow-50 text-yellow-800 border border-yellow-300 rounded px-2 py-1">
+  Warning
+</div>
+
+// Error - red background, dark or white text
+<div className="bg-red-100 text-red-800 border border-red-300 rounded px-2 py-1">
+  Error
+</div>
+
+// Info - blue background, appropriate text
+<div className="bg-blue-100 text-blue-800 border border-blue-300 rounded px-2 py-1">
+  Info
+</div>
+```
+
+### Text Variants
+
+#### Primary Text
+Use the darkest color on light backgrounds:
+```tsx
+<p className="text-gray-900">Primary text content</p>
+```
+
+#### Secondary Text
+Use medium-dark colors for less emphasis:
+```tsx
+<p className="text-gray-600">Secondary descriptive text</p>
+```
+
+#### Muted Text
+Use lighter colors but maintain readability:
+```tsx
+<p className="text-gray-500">Muted helper text</p>
+```
+
+#### Disabled Text
+Use lighter colors to indicate disabled state:
+```tsx
+<p className="text-gray-400">Disabled text</p>
+```
+
+### Form Inputs
+
+Always specify text color and background explicitly for form inputs:
+
+```tsx
+// ✅ GOOD - Explicit text color and background
+<input
+  type="text"
+  className="w-full px-3 py-2 text-gray-900 bg-white border border-gray-300 rounded-lg 
+             focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+             placeholder:text-gray-400"
+  placeholder="Enter value"
+/>
+
+<input
+  type="date"
+  className="w-full px-3 py-2 text-gray-900 bg-white border border-gray-300 rounded-lg 
+             focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+/>
+
+<textarea
+  className="w-full px-3 py-2 text-gray-900 bg-white border border-gray-300 rounded-lg 
+             focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+             placeholder:text-gray-400"
+  placeholder="Enter description"
+/>
+
+// ❌ BAD - Missing text color (browser default may vary)
+<input
+  type="text"
+  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+/>
+
+// Labels should also have good contrast
+<label className="block text-xs font-medium text-gray-700 mb-1">
+  Field Label
+</label>
+
+// Disabled/readonly inputs
+<input
+  type="date"
+  value="2025-01-15"
+  readOnly
+  disabled
+  className="w-full px-3 py-2 text-gray-700 bg-gray-100 border border-gray-300 rounded-lg 
+             cursor-not-allowed"
+/>
+```
+
+**Key Points for Form Inputs:**
+- ✅ Always use `text-gray-900` for active input text
+- ✅ Always use `bg-white` for active input background
+- ✅ Use `text-gray-700 bg-gray-100` for disabled/readonly inputs
+- ✅ Add `cursor-not-allowed` to disabled inputs for better UX
+- ✅ Set `max` attribute on date inputs to prevent future dates when needed
+- ✅ For date range filters: end date should be today (readonly), start date is user-editable
+- ✅ Auto-apply date changes (no manual "Apply" button needed) for better UX
+
+### Interactive States
+
+Ensure hover, focus, and active states also maintain contrast:
+
+```tsx
+<button className="
+  bg-blue-600 text-white 
+  hover:bg-blue-700 hover:text-white
+  focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+  disabled:bg-gray-300 disabled:text-gray-500
+">
+  Interactive Button
+</button>
+```
+
+### Gradient Backgrounds
+
+When using gradients, ensure text remains readable across the entire gradient:
+
+```tsx
+// ✅ Good - white text visible on entire gradient
+<div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+  Readable across gradient
+</div>
+
+// ❌ Bad - text might be invisible on parts of gradient
+<div className="bg-gradient-to-r from-white to-gray-900 text-gray-500">
+  Invisible on white part
+</div>
+```
+
+### Testing Contrast
+
+Before committing code with new color combinations:
+
+1. **Visual Check**: Can you easily read the text?
+2. **Squint Test**: If you squint, can you still see the text?
+3. **Grayscale Test**: Does it work in grayscale?
+4. **Use Browser DevTools**: Check contrast ratio in accessibility panel
+5. **Online Tools**: Use WebAIM Contrast Checker (https://webaim.org/resources/contrastchecker/)
+
+### Common Mistakes to Avoid
+
+```tsx
+// ❌ NEVER DO THIS
+<div className="bg-red-500 text-red-500">Invisible</div>
+<div className="bg-gray-100 text-gray-200">Too low contrast</div>
+<div className="bg-white text-gray-50">Barely visible</div>
+<div className="text-gray-900">Text without background context</div> // Depends on parent
+
+// ✅ ALWAYS DO THIS
+<div className="bg-red-100 text-red-900">High contrast</div>
+<div className="bg-gray-100 text-gray-900">Clear visibility</div>
+<div className="bg-white text-gray-900">Perfect readability</div>
+<div className="bg-blue-600 text-white">Excellent contrast</div>
+```
+
+## Implementation Checklist
+
+When creating new UI components:
+
+- [ ] Check that text color contrasts with background
+- [ ] Test with different viewport sizes
+- [ ] Verify hover/focus states have sufficient contrast
+- [ ] Ensure disabled states are distinguishable but still readable
+- [ ] Test with browser zoom at 200%
+- [ ] Validate with accessibility tools (Chrome DevTools, axe DevTools)
+- [ ] Consider dark mode if applicable
+
+## AI Assistant Responsibilities
+
+When generating or reviewing code:
+
+1. **Always validate** color combinations for sufficient contrast
+2. **Suggest corrections** when low contrast is detected
+3. **Use established patterns** from this project (see above examples)
+4. **Alert the user** if a color combination might be problematic
+5. **Provide alternatives** with better contrast ratios
+
+## Resources
+
+- [WCAG 2.1 Color Contrast Guidelines](https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html)
+- [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/)
+- [Tailwind CSS Colors](https://tailwindcss.com/docs/customizing-colors)
+- [Chrome DevTools Accessibility](https://developer.chrome.com/docs/devtools/accessibility/reference/)
+# Accessibility and UI Rules
+
+## Color Contrast and Text Visibility
+
+### Critical Rule: Text and Background Color Contrast
+
+**NEVER use the same or similar colors for text and background** - this makes content invisible or unreadable.
+
+#### ❌ BAD Examples - Invisible or Low Contrast Text
+
+```tsx
+// Same color - text is invisible
+<div className="bg-gray-100 text-gray-100">
+  Invisible text
+</div>
+
+// Very low contrast - hard to read
+<div className="bg-gray-200 text-gray-300">
+  Low contrast text
+</div>
+
+// White on light background
+<div className="bg-gray-50 text-white">
+  Poor visibility
+</div>
+
+// Dark text on dark background
+<div className="bg-gray-900 text-gray-800">
+  Invisible text
+</div>
+```
+
+#### ✅ GOOD Examples - High Contrast Text
+
+```tsx
+// Dark text on light background
+<div className="bg-white text-gray-900">
+  High contrast text
+</div>
+
+<div className="bg-gray-50 text-gray-900">
+  Good visibility
+</div>
+
+// Light text on dark background
+<div className="bg-gray-900 text-white">
+  High contrast text
+</div>
+
+<div className="bg-blue-600 text-white">
+  Good visibility
+</div>
+
+// Medium backgrounds need appropriate text color
+<div className="bg-gray-500 text-white">
+  Light text on medium background
+</div>
+
+<div className="bg-gray-400 text-gray-900">
+  Dark text on medium background
+</div>
+```
+
+### Contrast Ratio Guidelines (WCAG)
+
+Follow Web Content Accessibility Guidelines (WCAG) for contrast ratios:
+
+- **Normal text (< 18pt)**: Minimum contrast ratio of **4.5:1** (Level AA)
+- **Large text (≥ 18pt or 14pt bold)**: Minimum contrast ratio of **3:1** (Level AA)
+- **Enhanced (Level AAA)**: 
+  - Normal text: **7:1**
+  - Large text: **4.5:1**
+
+### Tailwind Color Combinations
+
+#### Light Backgrounds (50-300)
+Use **dark text** (600-900):
+```tsx
+<div className="bg-gray-50 text-gray-900">   // ✅ Good
+<div className="bg-blue-100 text-blue-900">  // ✅ Good
+<div className="bg-red-100 text-red-800">    // ✅ Good
+```
+
+#### Medium Backgrounds (400-600)
+Use **white or very dark text**:
+```tsx
+<div className="bg-gray-500 text-white">     // ✅ Good
+<div className="bg-blue-600 text-white">     // ✅ Good
+<div className="bg-red-500 text-white">      // ✅ Good
+```
+
+#### Dark Backgrounds (700-900)
+Use **white or very light text** (50-100):
+```tsx
+<div className="bg-gray-900 text-white">     // ✅ Good
+<div className="bg-blue-800 text-blue-50">   // ✅ Good
+<div className="bg-red-900 text-red-100">    // ✅ Good
+```
+
+### Common Patterns in This Project
+
+#### Buttons
+```tsx
+// Primary button - dark background, white text
+<button className="bg-blue-600 text-white hover:bg-blue-700">
+  Primary Action
+</button>
+
+// Secondary button - light background, dark text
+<button className="bg-gray-100 text-gray-900 hover:bg-gray-200">
+  Secondary Action
+</button>
+
+// Danger button - red background, white text
+<button className="bg-red-600 text-white hover:bg-red-700">
+  Delete
+</button>
+```
+
+#### Cards
+```tsx
+// White card with dark text
+<div className="bg-white rounded-lg shadow p-4">
+  <h3 className="text-gray-900 font-bold">Title</h3>
+  <p className="text-gray-600">Description text</p>
+</div>
+
+// Colored card with appropriate text
+<div className="bg-blue-600 rounded-lg shadow p-4">
+  <h3 className="text-white font-bold">Title</h3>
+  <p className="text-blue-100">Description text</p>
+</div>
+```
+
+#### Status Indicators
+```tsx
+// Success - green background, appropriate text
+<div className="bg-green-100 text-green-800 border border-green-300 rounded px-2 py-1">
+  Success
+</div>
+
+// Warning - yellow background, dark text
+<div className="bg-yellow-50 text-yellow-800 border border-yellow-300 rounded px-2 py-1">
+  Warning
+</div>
+
+// Error - red background, dark or white text
+<div className="bg-red-100 text-red-800 border border-red-300 rounded px-2 py-1">
+  Error
+</div>
+
+// Info - blue background, appropriate text
+<div className="bg-blue-100 text-blue-800 border border-blue-300 rounded px-2 py-1">
+  Info
+</div>
+```
+
+### Text Variants
+
+#### Primary Text
+Use the darkest color on light backgrounds:
+```tsx
+<p className="text-gray-900">Primary text content</p>
+```
+
+#### Secondary Text
+Use medium-dark colors for less emphasis:
+```tsx
+<p className="text-gray-600">Secondary descriptive text</p>
+```
+
+#### Muted Text
+Use lighter colors but maintain readability:
+```tsx
+<p className="text-gray-500">Muted helper text</p>
+```
+
+#### Disabled Text
+Use lighter colors to indicate disabled state:
+```tsx
+<p className="text-gray-400">Disabled text</p>
+```
+
+### Form Inputs
+
+Always specify text color and background explicitly for form inputs:
+
+```tsx
+// ✅ GOOD - Explicit text color and background
+<input
+  type="text"
+  className="w-full px-3 py-2 text-gray-900 bg-white border border-gray-300 rounded-lg 
+             focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+             placeholder:text-gray-400"
+  placeholder="Enter value"
+/>
+
+<input
+  type="date"
+  className="w-full px-3 py-2 text-gray-900 bg-white border border-gray-300 rounded-lg 
+             focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+/>
+
+<textarea
+  className="w-full px-3 py-2 text-gray-900 bg-white border border-gray-300 rounded-lg 
+             focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+             placeholder:text-gray-400"
+  placeholder="Enter description"
+/>
+
+// ❌ BAD - Missing text color (browser default may vary)
+<input
+  type="text"
+  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+/>
+
+// Labels should also have good contrast
+<label className="block text-xs font-medium text-gray-700 mb-1">
+  Field Label
+</label>
+
+// Disabled/readonly inputs
+<input
+  type="date"
+  value="2025-01-15"
+  readOnly
+  disabled
+  className="w-full px-3 py-2 text-gray-700 bg-gray-100 border border-gray-300 rounded-lg 
+             cursor-not-allowed"
+/>
+```
+
+**Key Points for Form Inputs:**
+- ✅ Always use `text-gray-900` for active input text
+- ✅ Always use `bg-white` for active input background
+- ✅ Use `text-gray-700 bg-gray-100` for disabled/readonly inputs
+- ✅ Add `cursor-not-allowed` to disabled inputs for better UX
+- ✅ Set `max` attribute on date inputs to prevent future dates when needed
+- ✅ For date range filters: end date should be today (readonly), start date is user-editable
+- ✅ Auto-apply date changes (no manual "Apply" button needed) for better UX
+
+### Interactive States
+
+Ensure hover, focus, and active states also maintain contrast:
+
+```tsx
+<button className="
+  bg-blue-600 text-white 
+  hover:bg-blue-700 hover:text-white
+  focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+  disabled:bg-gray-300 disabled:text-gray-500
+">
+  Interactive Button
+</button>
+```
+
+### Gradient Backgrounds
+
+When using gradients, ensure text remains readable across the entire gradient:
+
+```tsx
+// ✅ Good - white text visible on entire gradient
+<div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+  Readable across gradient
+</div>
+
+// ❌ Bad - text might be invisible on parts of gradient
+<div className="bg-gradient-to-r from-white to-gray-900 text-gray-500">
+  Invisible on white part
+</div>
+```
+
+### Testing Contrast
+
+Before committing code with new color combinations:
+
+1. **Visual Check**: Can you easily read the text?
+2. **Squint Test**: If you squint, can you still see the text?
+3. **Grayscale Test**: Does it work in grayscale?
+4. **Use Browser DevTools**: Check contrast ratio in accessibility panel
+5. **Online Tools**: Use WebAIM Contrast Checker (https://webaim.org/resources/contrastchecker/)
+
+### Common Mistakes to Avoid
+
+```tsx
+// ❌ NEVER DO THIS
+<div className="bg-red-500 text-red-500">Invisible</div>
+<div className="bg-gray-100 text-gray-200">Too low contrast</div>
+<div className="bg-white text-gray-50">Barely visible</div>
+<div className="text-gray-900">Text without background context</div> // Depends on parent
+
+// ✅ ALWAYS DO THIS
+<div className="bg-red-100 text-red-900">High contrast</div>
+<div className="bg-gray-100 text-gray-900">Clear visibility</div>
+<div className="bg-white text-gray-900">Perfect readability</div>
+<div className="bg-blue-600 text-white">Excellent contrast</div>
+```
+
+## Implementation Checklist
+
+When creating new UI components:
+
+- [ ] Check that text color contrasts with background
+- [ ] Test with different viewport sizes
+- [ ] Verify hover/focus states have sufficient contrast
+- [ ] Ensure disabled states are distinguishable but still readable
+- [ ] Test with browser zoom at 200%
+- [ ] Validate with accessibility tools (Chrome DevTools, axe DevTools)
+- [ ] Consider dark mode if applicable
+
+## AI Assistant Responsibilities
+
+When generating or reviewing code:
+
+1. **Always validate** color combinations for sufficient contrast
+2. **Suggest corrections** when low contrast is detected
+3. **Use established patterns** from this project (see above examples)
+4. **Alert the user** if a color combination might be problematic
+5. **Provide alternatives** with better contrast ratios
+
+## Resources
+
+- [WCAG 2.1 Color Contrast Guidelines](https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html)
+- [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/)
+- [Tailwind CSS Colors](https://tailwindcss.com/docs/customizing-colors)
+- [Chrome DevTools Accessibility](https://developer.chrome.com/docs/devtools/accessibility/reference/)

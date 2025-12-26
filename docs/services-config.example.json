@@ -1,0 +1,206 @@
+{
+  "services": [
+    {
+      "name": "X-Lab API (Production)",
+      "description": "Основной API сервис X-Lab в production окружении",
+      "url": "https://api.x-lab.by/health",
+      "type": "Http",
+      "checkInterval": 60,
+      "timeout": 5000,
+      "retryCount": 2,
+      "isEnabled": true,
+      "isPublic": true,
+      "tags": ["api", "production", "critical"],
+      "configuration": {
+        "ExpectedStatusCode": 200,
+        "Headers": {},
+        "ParseModules": true,
+        "CriticalModules": ["database", "cache"]
+      }
+    },
+    {
+      "name": "X-Lab API (Staging)",
+      "description": "API сервис X-Lab в staging окружении",
+      "url": "https://staging-api.x-lab.by/health",
+      "type": "Http",
+      "checkInterval": 120,
+      "timeout": 5000,
+      "retryCount": 1,
+      "isEnabled": true,
+      "isPublic": false,
+      "tags": ["api", "staging"],
+      "configuration": {
+        "ExpectedStatusCode": 200,
+        "ParseModules": true
+      }
+    },
+    {
+      "name": "X-Lab Database (xlab)",
+      "description": "Основная база данных приложения xlab",
+      "url": "db.x-lab.by",
+      "type": "Database",
+      "checkInterval": 60,
+      "timeout": 10000,
+      "retryCount": 2,
+      "isEnabled": true,
+      "isPublic": false,
+      "tags": ["database", "sql-server", "critical"],
+      "configuration": {
+        "ConnectionString": "Data Source=db.x-lab.by;Initial Catalog=xlab;Integrated Security=False;TrustServerCertificate=True;User ID=crmuser;Password=***;Connection Timeout=600",
+        "TestQuery": "SELECT 1",
+        "CheckDatabaseSize": true,
+        "CheckActiveConnections": true
+      }
+    },
+    {
+      "name": "X-Lab Health Database",
+      "description": "База данных для хранения данных мониторинга",
+      "url": "db.x-lab.by",
+      "type": "Database",
+      "checkInterval": 120,
+      "timeout": 10000,
+      "retryCount": 1,
+      "isEnabled": true,
+      "isPublic": false,
+      "tags": ["database", "sql-server", "monitoring"],
+      "configuration": {
+        "ConnectionString": "Data Source=db.x-lab.by;Initial Catalog=XLabHealth;Integrated Security=False;TrustServerCertificate=True;User ID=crmuser;Password=***;Connection Timeout=600",
+        "TestQuery": "SELECT 1",
+        "CheckDatabaseSize": false,
+        "CheckActiveConnections": false
+      }
+    },
+    {
+      "name": "Redis Cache Server",
+      "description": "Redis сервер для кэширования на Linux",
+      "url": "redis://192.168.20.7:6379",
+      "type": "Redis",
+      "checkInterval": 60,
+      "timeout": 3000,
+      "retryCount": 2,
+      "isEnabled": true,
+      "isPublic": false,
+      "tags": ["cache", "redis", "linux"],
+      "configuration": {
+        "RedisConnection": "192.168.20.7:6379",
+        "CheckMemoryUsage": true,
+        "CheckConnectedClients": true
+      }
+    },
+    {
+      "name": "XLabNotificationService",
+      "description": "Служба уведомлений X-Lab на Windows",
+      "url": "XLabNotificationService",
+      "type": "WindowsService",
+      "checkInterval": 60,
+      "timeout": 5000,
+      "retryCount": 2,
+      "isEnabled": true,
+      "isPublic": false,
+      "tags": ["windows-service", "notification", "critical"],
+      "configuration": {
+        "ServiceName": "XLabNotificationService",
+        "MachineName": ".",
+        "CheckStartType": true,
+        "ExpectedStartType": "Automatic"
+      }
+    },
+    {
+      "name": "XLabSendService",
+      "description": "Служба отправки сообщений X-Lab",
+      "url": "XLabSendService",
+      "type": "WindowsService",
+      "checkInterval": 60,
+      "timeout": 5000,
+      "retryCount": 2,
+      "isEnabled": true,
+      "isPublic": false,
+      "tags": ["windows-service", "send", "critical"],
+      "configuration": {
+        "ServiceName": "XLabSendService",
+        "MachineName": ".",
+        "CheckStartType": true,
+        "ExpectedStartType": "Automatic"
+      }
+    },
+    {
+      "name": "XLabSendService (Remote Server)",
+      "description": "Служба отправки сообщений на удаленном сервере",
+      "url": "XLabSendService",
+      "type": "WindowsService",
+      "checkInterval": 120,
+      "timeout": 10000,
+      "retryCount": 1,
+      "isEnabled": true,
+      "isPublic": false,
+      "tags": ["windows-service", "send", "remote"],
+      "configuration": {
+        "ServiceName": "XLabSendService",
+        "MachineName": "SERVER-01",
+        "CheckStartType": false
+      }
+    },
+    {
+      "name": "External API Service",
+      "description": "Пример внешнего API сервиса для мониторинга",
+      "url": "https://external-api.example.com/health",
+      "type": "Http",
+      "checkInterval": 180,
+      "timeout": 10000,
+      "retryCount": 1,
+      "isEnabled": true,
+      "isPublic": false,
+      "tags": ["external", "api"],
+      "configuration": {
+        "ExpectedStatusCode": 200,
+        "Headers": {
+          "Authorization": "Bearer YOUR_TOKEN_HERE"
+        },
+        "ParseModules": false
+      }
+    }
+  ],
+  "notes": {
+    "description": "Этот файл содержит примеры конфигураций для различных типов сервисов, которые можно мониторить",
+    "usage": "Используйте этот файл как справочник при создании сервисов через API или для инициализации базы данных",
+    "important": [
+      "Замените *** в ConnectionString на реальные пароли",
+      "Замените YOUR_TOKEN_HERE на реальные токены",
+      "Настройте MachineName для Windows Services (используйте '.' для локальной машины)",
+      "Проверьте правильность URL и connection strings перед использованием",
+      "Настройте CheckInterval и Timeout в соответствии с требованиями вашей инфраструктуры"
+    ],
+    "serviceTypes": {
+      "Http": "Для мониторинга HTTP/HTTPS endpoints",
+      "Database": "Для мониторинга баз данных MS SQL Server",
+      "Redis": "Для мониторинга Redis серверов",
+      "WindowsService": "Для мониторинга Windows служб"
+    },
+    "configurationFields": {
+      "Http": {
+        "ExpectedStatusCode": "Ожидаемый HTTP статус код (по умолчанию 200)",
+        "Headers": "Дополнительные HTTP заголовки (опционально)",
+        "ParseModules": "Парсить детальную информацию о модулях из ответа (для X-Lab API)",
+        "CriticalModules": "Список критических модулей для определения статуса"
+      },
+      "Database": {
+        "ConnectionString": "Строка подключения к базе данных",
+        "TestQuery": "Тестовый SQL запрос (по умолчанию 'SELECT 1')",
+        "CheckDatabaseSize": "Собирать информацию о размере БД",
+        "CheckActiveConnections": "Собирать информацию об активных соединениях"
+      },
+      "Redis": {
+        "RedisConnection": "Строка подключения к Redis (host:port)",
+        "CheckMemoryUsage": "Собирать информацию об использовании памяти",
+        "CheckConnectedClients": "Собирать информацию о подключенных клиентах"
+      },
+      "WindowsService": {
+        "ServiceName": "Имя Windows службы",
+        "MachineName": "Имя машины ('.' для локальной машины)",
+        "CheckStartType": "Проверять тип запуска службы",
+        "ExpectedStartType": "Ожидаемый тип запуска (Automatic, Manual, Disabled)"
+      }
+    }
+  }
+}
+

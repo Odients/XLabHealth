@@ -1,0 +1,361 @@
+---
+alwaysApply: true
+---
+
+# Documentation Usage for X-Lab Status Service
+
+## Overview
+
+This project is **X-Lab Status Service** - a health monitoring service for the X-Lab ecosystem. The AI assistant MUST consult the project documentation before implementing features or making architectural decisions.
+
+## Documentation Sources
+
+### 1. Local Documentation (Primary Source)
+
+All project documentation is located in `docs/` directory.
+
+#### Technical Specifications
+
+Core documentation for the project:
+
+- **`docs/TZ.md`** - General overview and project description:
+  - Project purpose and goals
+  - Functional requirements
+  - General architecture overview
+  - High-level structure
+
+- **`docs/TZ-Backend.md`** - Backend technical specification:
+  - Complete backend requirements
+  - API endpoints specification (Public and Private)
+  - Database schema and entities
+  - Service types and health check providers
+  - Authentication and authorization requirements
+  - Quartz.NET job scheduling configuration
+  - SignalR real-time updates
+  - Integration with external services (X-Lab API, SQL Server, Redis, Windows Services)
+  - Performance and scalability requirements
+  - Security requirements
+
+- **`docs/TZ-Frontend.md`** - Frontend technical specification:
+  - Frontend requirements
+  - UI/UX specifications
+  - Frontend architecture
+  - Component structure
+
+- **`PROJECT_STRUCTURE.md`** - Project structure documentation:
+  - Clean Architecture layer organization
+  - Folder structure for all projects
+  - Dependencies between projects
+  - Naming conventions
+
+**Important**: Always consult `docs/TZ-Backend.md` when implementing backend features, and refer to `.cursor/rules/project-structure.mdc` for structure and naming conventions.
+
+### 2. Context7 (For Framework/Library Documentation)
+
+For up-to-date documentation on frameworks, libraries, and technologies used in the project, use Context7:
+
+1. **Resolve library ID**: Use `mcp_context7_resolve-library-id` with the library name
+2. **Fetch documentation**: Use `mcp_context7_get-library-docs` with the resolved library ID
+3. **Apply knowledge**: Use the retrieved documentation to implement features correctly
+
+**Common libraries to reference for this project:**
+- **ASP.NET Core**: `/dotnet/aspnetcore` or `/microsoft/aspnetcore`
+- **Entity Framework Core**: `/dotnet/efcore` or `/microsoft/EntityFrameworkCore`
+- **Quartz.NET**: Look for Quartz.NET documentation
+- **SignalR**: `/microsoft/aspnetcore` (SignalR is part of ASP.NET Core)
+- **Serilog**: Look for Serilog documentation
+- **C# / .NET**: `/microsoft/dotnet` or `/dotnet/csharplang`
+
+**Example**: When implementing health check providers, fetch EF Core documentation for database access patterns.
+
+### 3. Project Structure Rules
+
+Always consult `.cursor/rules/project-structure.mdc` for:
+- Folder naming conventions (PascalCase)
+- File naming conventions (PascalCase for classes, camelCase for variables)
+- Project organization (Clean Architecture layers)
+- Where to place new files
+- Dependency rules between layers
+
+## AI Assistant Workflow
+
+When working on tasks:
+
+### Step 1: Identify Required Documentation
+
+Determine what documentation is needed:
+- **Backend features**: Read `docs/TZ-Backend.md`
+- **Project structure/naming**: Read `.cursor/rules/project-structure.mdc`
+- **Framework/library features**: Use Context7
+- **Architecture questions**: Read `PROJECT_STRUCTURE.md`
+
+### Step 2: Read Local Documentation
+
+**ALWAYS** read the relevant documentation when:
+
+**For Backend Implementation** - Read `docs/TZ-Backend.md` when:
+1. Implementing API endpoints (controllers, routes, authentication)
+2. Creating domain entities (Service, HealthCheckResult, User, etc.)
+3. Implementing health check providers (HTTP, Database, Redis, Windows Service)
+4. Setting up Quartz.NET jobs for periodic checks
+5. Implementing SignalR hubs for real-time updates
+6. Configuring Entity Framework Core and database
+7. Understanding service types and health status enums
+8. Implementing authentication and authorization (JWT)
+9. Understanding public vs private API separation
+
+**For Project Structure** - Read `.cursor/rules/project-structure.mdc` when:
+1. Creating new files (where to place them)
+2. Naming files, folders, classes, methods
+3. Understanding Clean Architecture layers
+4. Setting up project dependencies
+
+**For Architecture** - Read `PROJECT_STRUCTURE.md` when:
+1. Understanding project organization
+2. Knowing which layer should contain what
+3. Understanding dependencies between projects
+
+### Step 3: Fetch External Documentation (If Needed)
+
+Use Context7 when:
+1. Implementing framework-specific features (ASP.NET Core middleware, EF Core migrations, etc.)
+2. Using library-specific APIs or patterns (Quartz.NET jobs, SignalR hubs, Serilog configuration)
+3. Needing up-to-date information on library versions
+4. Understanding best practices for .NET development
+5. Looking for code examples and patterns
+
+**Examples of when to use Context7:**
+- Setting up EF Core DbContext and migrations
+- Creating Quartz.NET jobs and triggers
+- Implementing SignalR hubs and groups
+- Configuring Serilog for structured logging
+- Implementing JWT authentication in ASP.NET Core
+- Setting up health checks middleware
+
+### Step 4: Implement with Accuracy
+
+- **Follow Clean Architecture**: Ensure code is placed in the correct layer
+- **Follow naming conventions**: Use PascalCase for classes, camelCase for variables
+- **Never guess** API contracts or entity structures - refer to TZ-Backend.md
+- **Always verify** against documentation before implementing
+- **Validate** that implementation matches the specification exactly
+
+## How to Use Documentation
+
+### Understanding Backend Requirements
+
+1. **Read TZ-Backend.md sections** relevant to your task:
+   - Section 2: Functional requirements (API endpoints, features)
+   - Section 3: Technical requirements (tech stack, architecture)
+   - Section 4: Data structures (entities, enums, DTOs)
+   - Section 5: Development stages
+
+2. **Check entity definitions**: Section 4.1 defines all entities:
+   - Service entity structure
+   - HealthCheckResult entity structure
+   - ServiceConfiguration structure
+   - User and RefreshToken entities
+   - Enums: ServiceType, HealthStatus
+
+3. **Review API endpoints**: Section 2.3 defines:
+   - Public API endpoints (no auth)
+   - Private API endpoints (with auth)
+   - Authentication endpoints
+   - Webhooks endpoints
+
+4. **Understand service types**: Section 3.4 describes:
+   - HTTP/HTTPS health checks (X-Lab API)
+   - Database checks (MS SQL Server)
+   - Redis checks
+   - Windows Service checks (XLabNotificationService, XLabSendService)
+   - Custom checks
+
+### Understanding Project Structure
+
+1. **Check project-structure.mdc** for:
+   - Where files should be placed
+   - Naming conventions for files and folders
+   - Structure of each project (Core, Application, Infrastructure, Api)
+
+2. **Follow layer rules**:
+   - **Core**: Entities, interfaces, enums, exceptions (no dependencies)
+   - **Application**: DTOs, mappings, validators, application services (depends on Core)
+   - **Infrastructure**: Data access, external services, Quartz jobs (depends on Core)
+   - **Api**: Controllers, middleware, SignalR hubs (depends on Application and Infrastructure)
+
+## Practical Examples
+
+### Example 1: Implementing a New Health Check Provider
+
+**Task**: Create Windows Service health check provider
+
+**Process**:
+1. Read `docs/TZ-Backend.md` Section 3.4.4 (Windows Services monitoring)
+2. Understand ServiceType enum includes WindowsService = 4
+3. Check Section 4.1 for Service entity structure
+4. Check `.cursor/rules/project-structure.mdc` for where to place the provider (Infrastructure/Services)
+5. Read Context7 docs for System.ServiceProcess.ServiceController usage
+6. Implement WindowsServiceHealthCheckProvider in Infrastructure/Services
+7. Register provider in Infrastructure/Extensions
+
+**Files**:
+- Specification: `docs/TZ-Backend.md` (Section 3.4.4)
+- Structure: `.cursor/rules/project-structure.mdc`
+- Entity: `XLabStatusService.Core/Enums/ServiceType.cs`
+- Implementation: `XLabStatusService.Infrastructure/Services/WindowsServiceHealthCheckProvider.cs`
+
+### Example 2: Creating an API Controller
+
+**Task**: Create PublicController for public endpoints
+
+**Process**:
+1. Read `docs/TZ-Backend.md` Section 2.3.1 (Public REST API)
+2. Understand public endpoints structure (no authentication)
+3. Check Section 4.3 for DTO structures (PublicServiceDto)
+4. Check `.cursor/rules/project-structure.mdc` for controller structure (Api/Controllers)
+5. Read Context7 docs for ASP.NET Core controller patterns
+6. Implement PublicController with [AllowAnonymous] attribute
+7. Use application services from Application layer
+
+**Files**:
+- Specification: `docs/TZ-Backend.md` (Section 2.3.1)
+- Structure: `.cursor/rules/project-structure.mdc` (Api/Controllers)
+- Implementation: `XLabStatusService.Api/Controllers/PublicController.cs`
+
+### Example 3: Setting up Entity Framework Core
+
+**Task**: Configure DbContext and create migrations
+
+**Process**:
+1. Read `docs/TZ-Backend.md` Section 3.2 (Database requirements)
+2. Understand entity structures from Section 4.1
+3. Check Section 3.2.2 for database schema (tables, relationships)
+4. Check `.cursor/rules/project-structure.mdc` for EF Core location (Infrastructure/Data)
+5. Fetch Context7 docs for EF Core DbContext setup and migrations
+6. Create ApplicationDbContext in Infrastructure/Data
+7. Create entity configurations in Infrastructure/Data/Configurations
+8. Create initial migration
+
+**Files**:
+- Specification: `docs/TZ-Backend.md` (Section 3.2, 4.1)
+- Structure: `.cursor/rules/project-structure.mdc`
+- Implementation: 
+  - `XLabStatusService.Infrastructure/Data/ApplicationDbContext.cs`
+  - `XLabStatusService.Infrastructure/Data/Configurations/`
+
+### Example 4: Implementing Quartz.NET Jobs
+
+**Task**: Create HealthCheckJob for periodic service checks
+
+**Process**:
+1. Read `docs/TZ-Backend.md` Section 3.6 (Quartz.NET architecture)
+2. Understand job structure and requirements
+3. Check Section 3.6.7 for Quartz configuration
+4. Check `.cursor/rules/project-structure.mdc` for Jobs location (Infrastructure/Jobs)
+5. Fetch Context7 docs for Quartz.NET IJob implementation
+6. Implement HealthCheckJob implementing IJob
+7. Register job in Infrastructure/Extensions
+
+**Files**:
+- Specification: `docs/TZ-Backend.md` (Section 3.6)
+- Structure: `.cursor/rules/project-structure.mdc`
+- Implementation: `XLabStatusService.Infrastructure/Jobs/HealthCheckJob.cs`
+
+## Critical Rules
+
+### Architecture Layers
+
+- **Core**: Pure domain logic, no dependencies
+- **Application**: Application services, DTOs, depends only on Core
+- **Infrastructure**: Data access, external services, depends only on Core
+- **Api**: Controllers, middleware, depends on Application and Infrastructure
+
+**Never**:
+- Create dependencies from Core to other layers
+- Create dependencies from Application to Infrastructure
+- Place business logic in Infrastructure
+- Place data access in Application or Api
+
+### Naming Conventions
+
+- **Folders**: PascalCase (e.g., `Controllers/`, `HealthChecks/`)
+- **Classes**: PascalCase (e.g., `ServiceController.cs`, `HealthCheckService.cs`)
+- **Interfaces**: I prefix + PascalCase (e.g., `IServiceRepository.cs`)
+- **Variables**: camelCase (e.g., `var serviceId = Guid.NewGuid();`)
+- **Methods**: PascalCase, start with verb (e.g., `GetServiceByIdAsync`)
+- **Constants**: UPPER_SNAKE_CASE (e.g., `MAX_RETRY_COUNT`)
+
+### Entity Properties
+
+- Use PascalCase for entity properties (C# convention)
+- Follow entity definitions from TZ-Backend.md Section 4.1 exactly
+- Use proper types (Guid, string, DateTime, enum types)
+- Include navigation properties where specified
+
+### API Endpoints
+
+- Follow RESTful conventions
+- Use attribute routing `[Route("api/[controller]")]`
+- Public endpoints: `[AllowAnonymous]`
+- Private endpoints: `[Authorize]` with roles
+- Return appropriate HTTP status codes
+- Use DTOs for request/response, never expose entities directly
+
+## Best Practices
+
+1. **Read TZ-Backend.md BEFORE coding**: Don't guess API contracts or entity structures
+2. **Follow Clean Architecture**: Keep layers separate and dependencies correct
+3. **Use Context7 for libraries**: Get up-to-date documentation for EF Core, Quartz.NET, SignalR, etc.
+4. **Follow naming conventions**: Check project-structure.mdc for conventions
+5. **Validate early**: Check data against entity definitions
+6. **Handle errors properly**: Use exceptions and proper HTTP status codes
+7. **Document code**: Add XML comments for public APIs
+8. **Keep documentation updated**: If requirements change, update TZ-Backend.md
+
+## Troubleshooting
+
+### Problem: Unsure where to place a file
+
+**Solution**: 
+1. Check `.cursor/rules/project-structure.mdc` for project structure
+2. Determine which layer the code belongs to (Core/Application/Infrastructure/Api)
+3. Follow the folder structure specified in project-structure.mdc
+
+### Problem: Unsure about entity structure
+
+**Solution**:
+1. Read `docs/TZ-Backend.md` Section 4.1 (Data structures)
+2. Check existing entity definitions
+3. Follow the exact structure specified in the technical specification
+
+### Problem: Need to understand API endpoint requirements
+
+**Solution**:
+1. Read `docs/TZ-Backend.md` Section 2.3 (REST API)
+2. Check if it's public (Section 2.3.1) or private (Section 2.3.2)
+3. Understand authentication requirements
+4. Check required response structure
+
+### Problem: Need library-specific implementation details
+
+**Solution**:
+1. Use Context7 to fetch library documentation
+2. Search for specific patterns (e.g., "Entity Framework Core DbContext setup")
+3. Apply best practices from official documentation
+
+## Maintenance
+
+The AI assistant should:
+- Alert user if TZ-Backend.md seems outdated or incomplete
+- Suggest updating documentation when requirements change
+- Keep project-structure.mdc updated if structure evolves
+- Document new patterns or common issues in this file
+- Reference Context7 for up-to-date library documentation
+
+## Notes
+
+- This project is **X-Lab Status Service** - a monitoring service, not a client application
+- All backend requirements are in `docs/TZ-Backend.md`
+- Frontend requirements (if applicable) are in `docs/TZ-Frontend.md`
+- Project structure and naming conventions are in `.cursor/rules/project-structure.mdc`
+- Use Context7 for framework/library documentation (ASP.NET Core, EF Core, Quartz.NET, etc.)

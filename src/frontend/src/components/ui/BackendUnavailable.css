@@ -1,0 +1,51 @@
+.backend-unavailable {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  padding: 2rem;
+}
+
+.backend-unavailable-content {
+  text-align: center;
+  max-width: 500px;
+}
+
+.backend-unavailable-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.backend-unavailable-message {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.backend-unavailable-auto-retry {
+  font-size: 0.9rem;
+  color: #999;
+  margin-bottom: 1.5rem;
+  font-style: italic;
+}
+
+.backend-unavailable-retry {
+  padding: 0.75rem 1.5rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.backend-unavailable-retry:hover {
+  background-color: #0056b3;
+}
+
+.backend-unavailable-retry:active {
+  background-color: #004085;
+}
+

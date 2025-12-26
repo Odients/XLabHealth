@@ -1,0 +1,1034 @@
+---
+description: All UI components MUST be responsive and provide excellent user experience on mobile devices, tablets, and desktops.
+alwaysApply: false
+---
+# Responsive Design & Mobile-First Development
+
+**CRITICAL**: All UI components MUST be responsive and provide excellent user experience on mobile devices, tablets, and desktops.
+
+## Core Principles
+
+### 1. Mobile-First Approach
+
+**ALWAYS** design for mobile devices first, then enhance for larger screens:
+
+```tsx
+// ✅ Good - Mobile first with progressive enhancement
+<div className="flex flex-col md:flex-row gap-4">
+  <div className="w-full md:w-1/2">Content</div>
+</div>
+
+// ❌ Bad - Desktop first with mobile afterthought
+<div className="flex flex-row gap-4">
+  <div className="w-1/2">Content</div>
+</div>
+```
+
+### 2. Tailwind Responsive Breakpoints
+
+Use Tailwind's mobile-first breakpoint system:
+
+- **Default (no prefix)**: Mobile (< 640px)
+- **`sm:`**: Small tablets (≥ 640px)
+- **`md:`**: Tablets (≥ 768px)
+- **`lg:`**: Desktops (≥ 1024px)
+- **`xl:`**: Large desktops (≥ 1280px)
+- **`2xl:`**: Extra large screens (≥ 1536px)
+
+```tsx
+// Example: Button that's full width on mobile, auto width on desktop
+<button className="w-full sm:w-auto px-4 py-2">
+  Click me
+</button>
+```
+
+## Mandatory Responsive Patterns
+
+### Layout & Grid
+
+#### Cards and Lists
+
+```tsx
+// ✅ Good - Responsive card layout
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  {items.map(item => <Card key={item.id} {...item} />)}
+</div>
+
+// ❌ Bad - Fixed desktop grid
+<div className="grid grid-cols-3 gap-6">
+  {items.map(item => <Card key={item.id} {...item} />)}
+</div>
+```
+
+#### Flex Layouts
+
+```tsx
+// ✅ Good - Stack on mobile, row on desktop
+<div className="flex flex-col md:flex-row gap-4">
+  <aside className="w-full md:w-64">Sidebar</aside>
+  <main className="flex-1">Main content</main>
+</div>
+
+// ❌ Bad - Always horizontal, breaks on mobile
+<div className="flex flex-row gap-6">
+  <aside className="w-64">Sidebar</aside>
+  <main className="flex-1">Main content</main>
+</div>
+```
+
+### Typography
+
+```tsx
+// ✅ Good - Responsive text sizes
+<h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
+  Page Title
+</h1>
+<p className="text-sm sm:text-base">
+  Description text
+</p>
+
+// ❌ Bad - Fixed large text on mobile
+<h1 className="text-4xl font-bold">
+  Page Title
+</h1>
+```
+
+### Spacing & Padding
+
+```tsx
+// ✅ Good - Responsive spacing
+<div className="p-4 sm:p-6 lg:p-8">
+  <div className="space-y-4 sm:space-y-6">
+    Content with responsive gaps
+  </div>
+</div>
+
+// ❌ Bad - Fixed large padding on mobile
+<div className="p-8">
+  <div className="space-y-6">
+    Content
+  </div>
+</div>
+```
+
+### Images
+
+```tsx
+// ✅ Good - Responsive image sizing
+<img 
+  src={imageUrl} 
+  alt="Description"
+  className="w-full h-auto max-w-sm md:max-w-md lg:max-w-lg"
+/>
+
+// ❌ Bad - Fixed size, may overflow
+<img 
+  src={imageUrl} 
+  alt="Description"
+  className="w-96 h-64"
+/>
+```
+
+## Component-Specific Requirements
+
+### Navigation
+
+```tsx
+// ✅ Good - Mobile hamburger menu, desktop inline
+<nav className="relative">
+  {/* Mobile menu button */}
+  <button className="md:hidden" onClick={toggleMenu}>
+    <MenuIcon />
+  </button>
+  
+  {/* Desktop navigation */}
+  <div className="hidden md:flex md:gap-4">
+    <NavLink href="/home">Home</NavLink>
+    <NavLink href="/about">About</NavLink>
+  </div>
+  
+  {/* Mobile menu */}
+  {isMenuOpen && (
+    <div className="md:hidden absolute top-full left-0 right-0 bg-white">
+      <NavLink href="/home">Home</NavLink>
+      <NavLink href="/about">About</NavLink>
+    </div>
+  )}
+</nav>
+```
+
+### Tables
+
+```tsx
+// ✅ Good - Responsive table with scroll
+<div className="overflow-x-auto">
+  <table className="min-w-full">
+    <thead>
+      <tr>
+        <th className="px-4 py-2 text-left">Name</th>
+        <th className="hidden sm:table-cell px-4 py-2">Email</th>
+        <th className="hidden md:table-cell px-4 py-2">Phone</th>
+      </tr>
+    </thead>
+  </table>
+</div>
+
+// Alternative: Card view on mobile
+<div className="block md:hidden space-y-4">
+  {items.map(item => (
+    <div key={item.id} className="bg-white p-4 rounded shadow">
+      <p className="font-bold">{item.name}</p>
+      <p className="text-sm text-gray-600">{item.email}</p>
+    </div>
+  ))}
+</div>
+<table className="hidden md:table">
+  {/* Desktop table */}
+</table>
+```
+
+### Buttons & Actions
+
+```tsx
+// ✅ Good - Full width on mobile, auto on desktop
+<div className="flex flex-col sm:flex-row gap-2">
+  <button className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded">
+    Primary Action
+  </button>
+  <button className="w-full sm:w-auto px-4 py-2 border rounded">
+    Secondary Action
+  </button>
+</div>
+
+// ✅ Good - Icon only on mobile, text on desktop
+<button className="flex items-center gap-2 px-4 py-2">
+  <SaveIcon className="w-5 h-5" />
+  <span className="hidden sm:inline">Save Changes</span>
+</button>
+```
+
+### Forms
+
+```tsx
+// ✅ Good - Responsive form layout
+<form className="space-y-4">
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+      <label className="block text-sm font-medium mb-1">First Name</label>
+      <input className="w-full px-3 py-2 border rounded" />
+    </div>
+    <div>
+      <label className="block text-sm font-medium mb-1">Last Name</label>
+      <input className="w-full px-3 py-2 border rounded" />
+    </div>
+  </div>
+  
+  <div>
+    <label className="block text-sm font-medium mb-1">Email</label>
+    <input type="email" className="w-full px-3 py-2 border rounded" />
+  </div>
+  
+  <button type="submit" className="w-full sm:w-auto px-6 py-2 bg-blue-600 text-white rounded">
+    Submit
+  </button>
+</form>
+```
+
+### Modals & Dialogs
+
+```tsx
+// ✅ Good - Full screen on mobile, centered on desktop
+<div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+  <div className="bg-white w-full sm:w-auto sm:max-w-lg sm:rounded-lg max-h-screen overflow-y-auto">
+    <div className="p-4 sm:p-6">
+      Modal content
+    </div>
+  </div>
+</div>
+```
+
+## Touch & Interaction
+
+### Touch Targets
+
+**Minimum touch target size: 44x44px (Apple HIG) or 48x48px (Material Design)**
+
+```tsx
+// ✅ Good - Adequate touch target
+<button className="min-h-[44px] min-w-[44px] p-2">
+  <Icon className="w-5 h-5" />
+</button>
+
+// ❌ Bad - Too small for touch
+<button className="p-1">
+  <Icon className="w-4 h-4" />
+</button>
+```
+
+### Interactive Element Spacing
+
+```tsx
+// ✅ Good - Sufficient spacing between touch targets
+<div className="flex gap-2 sm:gap-3">
+  <button className="px-4 py-2">Button 1</button>
+  <button className="px-4 py-2">Button 2</button>
+</div>
+
+// ❌ Bad - Too close together on mobile
+<div className="flex gap-1">
+  <button className="px-2 py-1">Button 1</button>
+  <button className="px-2 py-1">Button 2</button>
+</div>
+```
+
+## Text & Content
+
+### Readability
+
+```tsx
+// ✅ Good - Readable line length
+<article className="max-w-full sm:max-w-2xl mx-auto px-4">
+  <p className="text-base sm:text-lg leading-relaxed">
+    Content text with good readability
+  </p>
+</article>
+
+// ❌ Bad - Too wide on desktop, too narrow on mobile
+<article className="w-full">
+  <p className="text-sm">
+    Content text
+  </p>
+</article>
+```
+
+### Text Truncation
+
+```tsx
+// ✅ Good - Handle long text gracefully
+<p className="truncate sm:whitespace-normal">
+  Long text that might overflow on mobile
+</p>
+
+// Use break-words for URLs or long strings
+<p className="break-all sm:break-words">
+  https://very-long-url.example.com/path/to/resource
+</p>
+```
+
+## Testing Requirements
+
+### Manual Testing Checklist
+
+Before marking a component as complete, test on:
+
+- [ ] Mobile (< 640px) - iPhone SE, Android small phones
+- [ ] Tablet (768px - 1024px) - iPad, Android tablets
+- [ ] Desktop (> 1024px) - Standard laptop/desktop screens
+- [ ] Large desktop (> 1440px) - Large monitors
+
+### Browser DevTools
+
+Use browser responsive mode:
+
+1. Chrome DevTools: `Cmd/Ctrl + Shift + M`
+2. Test common devices:
+   - iPhone SE (375px)
+   - iPhone 12/13/14 (390px)
+   - iPad (768px)
+   - Desktop (1280px, 1920px)
+
+### Touch Testing
+
+If possible, test on actual mobile devices to verify:
+- Touch targets are easy to tap
+- Gestures work correctly (swipe, pinch-zoom where applicable)
+- Forms are easy to fill on mobile keyboards
+- No horizontal scrolling (unless intentional)
+
+## Common Pitfalls to Avoid
+
+### 1. Fixed Widths
+
+```tsx
+// ❌ Bad - Fixed pixel widths break on different screens
+<div className="w-[800px]">Content</div>
+
+// ✅ Good - Relative widths or max-width
+<div className="w-full max-w-4xl mx-auto">Content</div>
+```
+
+### 2. Desktop-Only Features
+
+```tsx
+// ❌ Bad - Hover-only interactions (mobile has no hover)
+<div className="opacity-0 hover:opacity-100">
+  Important content
+</div>
+
+// ✅ Good - Touch-friendly alternatives
+<button onClick={toggleContent} className="md:hidden">
+  Show Details
+</button>
+<div className="hidden md:block md:opacity-0 md:hover:opacity-100">
+  Content visible on click (mobile) or hover (desktop)
+</div>
+```
+
+### 3. Overflow Issues
+
+```tsx
+// ❌ Bad - Can cause horizontal scroll on mobile
+<div className="flex gap-6 p-8">
+  <div className="min-w-[300px]">Wide content</div>
+  <div className="min-w-[300px]">Wide content</div>
+</div>
+
+// ✅ Good - Responsive with proper overflow handling
+<div className="flex flex-col sm:flex-row gap-4 p-4 sm:p-8">
+  <div className="w-full sm:w-auto">Content</div>
+  <div className="w-full sm:w-auto">Content</div>
+</div>
+```
+
+### 4. Tiny Text on Mobile
+
+```tsx
+// ❌ Bad - Too small to read on mobile
+<p className="text-xs">Important information</p>
+
+// ✅ Good - Readable on all devices
+<p className="text-sm sm:text-base">Important information</p>
+```
+
+## Performance Considerations
+
+### Images
+
+```tsx
+// ✅ Good - Responsive images with srcset
+<img
+  src="/image-800w.jpg"
+  srcSet="/image-400w.jpg 400w, /image-800w.jpg 800w, /image-1200w.jpg 1200w"
+  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 800px"
+  alt="Description"
+  className="w-full h-auto"
+/>
+
+// ✅ Good - Use Next.js Image component
+import Image from 'next/image';
+
+<Image
+  src="/image.jpg"
+  alt="Description"
+  width={800}
+  height={600}
+  className="w-full h-auto"
+  sizes="(max-width: 640px) 100vw, 800px"
+/>
+```
+
+### Lazy Loading
+
+```tsx
+// ✅ Good - Lazy load below-the-fold content
+<div className="space-y-4">
+  {items.slice(0, 5).map(item => <ItemCard key={item.id} {...item} />)}
+  
+  <div ref={loadMoreRef}>
+    {isInView && items.slice(5).map(item => <ItemCard key={item.id} {...item} />)}
+  </div>
+</div>
+```
+
+## Accessibility + Responsive
+
+Responsive design must maintain accessibility:
+
+```tsx
+// ✅ Good - Accessible on all screen sizes
+<nav aria-label="Main navigation">
+  <button 
+    className="md:hidden"
+    aria-expanded={isMenuOpen}
+    aria-controls="mobile-menu"
+  >
+    Menu
+  </button>
+  
+  <div 
+    id="mobile-menu"
+    className={`${isMenuOpen ? 'block' : 'hidden'} md:block`}
+  >
+    <a href="/home" className="block py-2 md:inline-block md:py-0">
+      Home
+    </a>
+  </div>
+</nav>
+```
+
+## Documentation
+
+When creating new components, document responsive behavior:
+
+```tsx
+/**
+ * UserCard Component
+ * 
+ * Displays user information in a card format.
+ * 
+ * Responsive behavior:
+ * - Mobile: Stacked layout with avatar on top
+ * - Tablet+: Horizontal layout with avatar on left
+ * - Actions always full width on mobile, auto on tablet+
+ * 
+ * @example
+ * ```tsx
+ * <UserCard user={userData} />
+ * ```
+ */
+export function UserCard({ user }: UserCardProps) {
+  // ...
+}
+```
+
+## Summary Checklist
+
+For every UI component, ensure:
+
+- ✅ Mobile-first approach (default styles for mobile, then `sm:`, `md:`, etc.)
+- ✅ Touch targets ≥ 44x44px
+- ✅ No horizontal scrolling on mobile
+- ✅ Text is readable (min 14-16px on mobile)
+- ✅ Buttons/actions are accessible on small screens
+- ✅ Forms are easy to use on mobile keyboards
+- ✅ Tables either scroll horizontally or transform to cards
+- ✅ Images are responsive and properly sized
+- ✅ Spacing appropriate for screen size
+- ✅ Tested on actual devices or browser DevTools
+- ✅ No hover-only interactions without touch alternatives
+
+## Enforcement
+
+The AI assistant should:
+- **Always** apply responsive classes when creating new components
+- **Warn** when detecting fixed widths or desktop-only patterns
+- **Suggest** mobile-first alternatives when reviewing code
+- **Test** mentally through different breakpoints before suggesting code
+- **Refuse** to create non-responsive UI without explicit user override
+
+This is a **mandatory** requirement, not optional. Mobile users are first-class citizens.
+# Responsive Design & Mobile-First Development
+
+**CRITICAL**: All UI components MUST be responsive and provide excellent user experience on mobile devices, tablets, and desktops.
+
+## Core Principles
+
+### 1. Mobile-First Approach
+
+**ALWAYS** design for mobile devices first, then enhance for larger screens:
+
+```tsx
+// ✅ Good - Mobile first with progressive enhancement
+<div className="flex flex-col md:flex-row gap-4">
+  <div className="w-full md:w-1/2">Content</div>
+</div>
+
+// ❌ Bad - Desktop first with mobile afterthought
+<div className="flex flex-row gap-4">
+  <div className="w-1/2">Content</div>
+</div>
+```
+
+### 2. Tailwind Responsive Breakpoints
+
+Use Tailwind's mobile-first breakpoint system:
+
+- **Default (no prefix)**: Mobile (< 640px)
+- **`sm:`**: Small tablets (≥ 640px)
+- **`md:`**: Tablets (≥ 768px)
+- **`lg:`**: Desktops (≥ 1024px)
+- **`xl:`**: Large desktops (≥ 1280px)
+- **`2xl:`**: Extra large screens (≥ 1536px)
+
+```tsx
+// Example: Button that's full width on mobile, auto width on desktop
+<button className="w-full sm:w-auto px-4 py-2">
+  Click me
+</button>
+```
+
+## Mandatory Responsive Patterns
+
+### Layout & Grid
+
+#### Cards and Lists
+
+```tsx
+// ✅ Good - Responsive card layout
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  {items.map(item => <Card key={item.id} {...item} />)}
+</div>
+
+// ❌ Bad - Fixed desktop grid
+<div className="grid grid-cols-3 gap-6">
+  {items.map(item => <Card key={item.id} {...item} />)}
+</div>
+```
+
+#### Flex Layouts
+
+```tsx
+// ✅ Good - Stack on mobile, row on desktop
+<div className="flex flex-col md:flex-row gap-4">
+  <aside className="w-full md:w-64">Sidebar</aside>
+  <main className="flex-1">Main content</main>
+</div>
+
+// ❌ Bad - Always horizontal, breaks on mobile
+<div className="flex flex-row gap-6">
+  <aside className="w-64">Sidebar</aside>
+  <main className="flex-1">Main content</main>
+</div>
+```
+
+### Typography
+
+```tsx
+// ✅ Good - Responsive text sizes
+<h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
+  Page Title
+</h1>
+<p className="text-sm sm:text-base">
+  Description text
+</p>
+
+// ❌ Bad - Fixed large text on mobile
+<h1 className="text-4xl font-bold">
+  Page Title
+</h1>
+```
+
+### Spacing & Padding
+
+```tsx
+// ✅ Good - Responsive spacing
+<div className="p-4 sm:p-6 lg:p-8">
+  <div className="space-y-4 sm:space-y-6">
+    Content with responsive gaps
+  </div>
+</div>
+
+// ❌ Bad - Fixed large padding on mobile
+<div className="p-8">
+  <div className="space-y-6">
+    Content
+  </div>
+</div>
+```
+
+### Images
+
+```tsx
+// ✅ Good - Responsive image sizing
+<img 
+  src={imageUrl} 
+  alt="Description"
+  className="w-full h-auto max-w-sm md:max-w-md lg:max-w-lg"
+/>
+
+// ❌ Bad - Fixed size, may overflow
+<img 
+  src={imageUrl} 
+  alt="Description"
+  className="w-96 h-64"
+/>
+```
+
+## Component-Specific Requirements
+
+### Navigation
+
+```tsx
+// ✅ Good - Mobile hamburger menu, desktop inline
+<nav className="relative">
+  {/* Mobile menu button */}
+  <button className="md:hidden" onClick={toggleMenu}>
+    <MenuIcon />
+  </button>
+  
+  {/* Desktop navigation */}
+  <div className="hidden md:flex md:gap-4">
+    <NavLink href="/home">Home</NavLink>
+    <NavLink href="/about">About</NavLink>
+  </div>
+  
+  {/* Mobile menu */}
+  {isMenuOpen && (
+    <div className="md:hidden absolute top-full left-0 right-0 bg-white">
+      <NavLink href="/home">Home</NavLink>
+      <NavLink href="/about">About</NavLink>
+    </div>
+  )}
+</nav>
+```
+
+### Tables
+
+```tsx
+// ✅ Good - Responsive table with scroll
+<div className="overflow-x-auto">
+  <table className="min-w-full">
+    <thead>
+      <tr>
+        <th className="px-4 py-2 text-left">Name</th>
+        <th className="hidden sm:table-cell px-4 py-2">Email</th>
+        <th className="hidden md:table-cell px-4 py-2">Phone</th>
+      </tr>
+    </thead>
+  </table>
+</div>
+
+// Alternative: Card view on mobile
+<div className="block md:hidden space-y-4">
+  {items.map(item => (
+    <div key={item.id} className="bg-white p-4 rounded shadow">
+      <p className="font-bold">{item.name}</p>
+      <p className="text-sm text-gray-600">{item.email}</p>
+    </div>
+  ))}
+</div>
+<table className="hidden md:table">
+  {/* Desktop table */}
+</table>
+```
+
+### Buttons & Actions
+
+```tsx
+// ✅ Good - Full width on mobile, auto on desktop
+<div className="flex flex-col sm:flex-row gap-2">
+  <button className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded">
+    Primary Action
+  </button>
+  <button className="w-full sm:w-auto px-4 py-2 border rounded">
+    Secondary Action
+  </button>
+</div>
+
+// ✅ Good - Icon only on mobile, text on desktop
+<button className="flex items-center gap-2 px-4 py-2">
+  <SaveIcon className="w-5 h-5" />
+  <span className="hidden sm:inline">Save Changes</span>
+</button>
+```
+
+### Forms
+
+```tsx
+// ✅ Good - Responsive form layout
+<form className="space-y-4">
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+      <label className="block text-sm font-medium mb-1">First Name</label>
+      <input className="w-full px-3 py-2 border rounded" />
+    </div>
+    <div>
+      <label className="block text-sm font-medium mb-1">Last Name</label>
+      <input className="w-full px-3 py-2 border rounded" />
+    </div>
+  </div>
+  
+  <div>
+    <label className="block text-sm font-medium mb-1">Email</label>
+    <input type="email" className="w-full px-3 py-2 border rounded" />
+  </div>
+  
+  <button type="submit" className="w-full sm:w-auto px-6 py-2 bg-blue-600 text-white rounded">
+    Submit
+  </button>
+</form>
+```
+
+### Modals & Dialogs
+
+```tsx
+// ✅ Good - Full screen on mobile, centered on desktop
+<div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+  <div className="bg-white w-full sm:w-auto sm:max-w-lg sm:rounded-lg max-h-screen overflow-y-auto">
+    <div className="p-4 sm:p-6">
+      Modal content
+    </div>
+  </div>
+</div>
+```
+
+## Touch & Interaction
+
+### Touch Targets
+
+**Minimum touch target size: 44x44px (Apple HIG) or 48x48px (Material Design)**
+
+```tsx
+// ✅ Good - Adequate touch target
+<button className="min-h-[44px] min-w-[44px] p-2">
+  <Icon className="w-5 h-5" />
+</button>
+
+// ❌ Bad - Too small for touch
+<button className="p-1">
+  <Icon className="w-4 h-4" />
+</button>
+```
+
+### Interactive Element Spacing
+
+```tsx
+// ✅ Good - Sufficient spacing between touch targets
+<div className="flex gap-2 sm:gap-3">
+  <button className="px-4 py-2">Button 1</button>
+  <button className="px-4 py-2">Button 2</button>
+</div>
+
+// ❌ Bad - Too close together on mobile
+<div className="flex gap-1">
+  <button className="px-2 py-1">Button 1</button>
+  <button className="px-2 py-1">Button 2</button>
+</div>
+```
+
+## Text & Content
+
+### Readability
+
+```tsx
+// ✅ Good - Readable line length
+<article className="max-w-full sm:max-w-2xl mx-auto px-4">
+  <p className="text-base sm:text-lg leading-relaxed">
+    Content text with good readability
+  </p>
+</article>
+
+// ❌ Bad - Too wide on desktop, too narrow on mobile
+<article className="w-full">
+  <p className="text-sm">
+    Content text
+  </p>
+</article>
+```
+
+### Text Truncation
+
+```tsx
+// ✅ Good - Handle long text gracefully
+<p className="truncate sm:whitespace-normal">
+  Long text that might overflow on mobile
+</p>
+
+// Use break-words for URLs or long strings
+<p className="break-all sm:break-words">
+  https://very-long-url.example.com/path/to/resource
+</p>
+```
+
+## Testing Requirements
+
+### Manual Testing Checklist
+
+Before marking a component as complete, test on:
+
+- [ ] Mobile (< 640px) - iPhone SE, Android small phones
+- [ ] Tablet (768px - 1024px) - iPad, Android tablets
+- [ ] Desktop (> 1024px) - Standard laptop/desktop screens
+- [ ] Large desktop (> 1440px) - Large monitors
+
+### Browser DevTools
+
+Use browser responsive mode:
+
+1. Chrome DevTools: `Cmd/Ctrl + Shift + M`
+2. Test common devices:
+   - iPhone SE (375px)
+   - iPhone 12/13/14 (390px)
+   - iPad (768px)
+   - Desktop (1280px, 1920px)
+
+### Touch Testing
+
+If possible, test on actual mobile devices to verify:
+- Touch targets are easy to tap
+- Gestures work correctly (swipe, pinch-zoom where applicable)
+- Forms are easy to fill on mobile keyboards
+- No horizontal scrolling (unless intentional)
+
+## Common Pitfalls to Avoid
+
+### 1. Fixed Widths
+
+```tsx
+// ❌ Bad - Fixed pixel widths break on different screens
+<div className="w-[800px]">Content</div>
+
+// ✅ Good - Relative widths or max-width
+<div className="w-full max-w-4xl mx-auto">Content</div>
+```
+
+### 2. Desktop-Only Features
+
+```tsx
+// ❌ Bad - Hover-only interactions (mobile has no hover)
+<div className="opacity-0 hover:opacity-100">
+  Important content
+</div>
+
+// ✅ Good - Touch-friendly alternatives
+<button onClick={toggleContent} className="md:hidden">
+  Show Details
+</button>
+<div className="hidden md:block md:opacity-0 md:hover:opacity-100">
+  Content visible on click (mobile) or hover (desktop)
+</div>
+```
+
+### 3. Overflow Issues
+
+```tsx
+// ❌ Bad - Can cause horizontal scroll on mobile
+<div className="flex gap-6 p-8">
+  <div className="min-w-[300px]">Wide content</div>
+  <div className="min-w-[300px]">Wide content</div>
+</div>
+
+// ✅ Good - Responsive with proper overflow handling
+<div className="flex flex-col sm:flex-row gap-4 p-4 sm:p-8">
+  <div className="w-full sm:w-auto">Content</div>
+  <div className="w-full sm:w-auto">Content</div>
+</div>
+```
+
+### 4. Tiny Text on Mobile
+
+```tsx
+// ❌ Bad - Too small to read on mobile
+<p className="text-xs">Important information</p>
+
+// ✅ Good - Readable on all devices
+<p className="text-sm sm:text-base">Important information</p>
+```
+
+## Performance Considerations
+
+### Images
+
+```tsx
+// ✅ Good - Responsive images with srcset
+<img
+  src="/image-800w.jpg"
+  srcSet="/image-400w.jpg 400w, /image-800w.jpg 800w, /image-1200w.jpg 1200w"
+  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 800px"
+  alt="Description"
+  className="w-full h-auto"
+/>
+
+// ✅ Good - Use Next.js Image component
+import Image from 'next/image';
+
+<Image
+  src="/image.jpg"
+  alt="Description"
+  width={800}
+  height={600}
+  className="w-full h-auto"
+  sizes="(max-width: 640px) 100vw, 800px"
+/>
+```
+
+### Lazy Loading
+
+```tsx
+// ✅ Good - Lazy load below-the-fold content
+<div className="space-y-4">
+  {items.slice(0, 5).map(item => <ItemCard key={item.id} {...item} />)}
+  
+  <div ref={loadMoreRef}>
+    {isInView && items.slice(5).map(item => <ItemCard key={item.id} {...item} />)}
+  </div>
+</div>
+```
+
+## Accessibility + Responsive
+
+Responsive design must maintain accessibility:
+
+```tsx
+// ✅ Good - Accessible on all screen sizes
+<nav aria-label="Main navigation">
+  <button 
+    className="md:hidden"
+    aria-expanded={isMenuOpen}
+    aria-controls="mobile-menu"
+  >
+    Menu
+  </button>
+  
+  <div 
+    id="mobile-menu"
+    className={`${isMenuOpen ? 'block' : 'hidden'} md:block`}
+  >
+    <a href="/home" className="block py-2 md:inline-block md:py-0">
+      Home
+    </a>
+  </div>
+</nav>
+```
+
+## Documentation
+
+When creating new components, document responsive behavior:
+
+```tsx
+/**
+ * UserCard Component
+ * 
+ * Displays user information in a card format.
+ * 
+ * Responsive behavior:
+ * - Mobile: Stacked layout with avatar on top
+ * - Tablet+: Horizontal layout with avatar on left
+ * - Actions always full width on mobile, auto on tablet+
+ * 
+ * @example
+ * ```tsx
+ * <UserCard user={userData} />
+ * ```
+ */
+export function UserCard({ user }: UserCardProps) {
+  // ...
+}
+```
+
+## Summary Checklist
+
+For every UI component, ensure:
+
+- ✅ Mobile-first approach (default styles for mobile, then `sm:`, `md:`, etc.)
+- ✅ Touch targets ≥ 44x44px
+- ✅ No horizontal scrolling on mobile
+- ✅ Text is readable (min 14-16px on mobile)
+- ✅ Buttons/actions are accessible on small screens
+- ✅ Forms are easy to use on mobile keyboards
+- ✅ Tables either scroll horizontally or transform to cards
+- ✅ Images are responsive and properly sized
+- ✅ Spacing appropriate for screen size
+- ✅ Tested on actual devices or browser DevTools
+- ✅ No hover-only interactions without touch alternatives
+
+## Enforcement
+
+The AI assistant should:
+- **Always** apply responsive classes when creating new components
+- **Warn** when detecting fixed widths or desktop-only patterns
+- **Suggest** mobile-first alternatives when reviewing code
+- **Test** mentally through different breakpoints before suggesting code
+- **Refuse** to create non-responsive UI without explicit user override
+
+This is a **mandatory** requirement, not optional. Mobile users are first-class citizens.

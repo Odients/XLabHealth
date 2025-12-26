@@ -1,0 +1,386 @@
+---
+globs: *.md
+alwaysApply: false
+---
+# Documentation Synchronization Rule
+
+**CRITICAL**: The `usingDocs.mdc` file MUST be updated whenever documentation changes occur.
+
+## Purpose
+
+This rule ensures that the documentation guide (`usingDocs.mdc`) remains accurate and synchronized with the actual documentation files in `docs/model/`. An outdated guide can lead to incorrect implementations and API integration errors.
+
+## When to Update usingDocs.mdc
+
+Update the file immediately when:
+
+### 1. New Entity Types Are Added to `docs/model/`
+
+**Actions required:**
+- Add the entity to the appropriate module section in `usingDocs.mdc`
+- Include a brief description of its purpose
+- Update examples if the entity is commonly used
+- Add to practical examples section if it's a key entity
+
+**Example:**
+```markdown
+# New entity: CustomerFeedbackItem.md added to docs/model/
+
+Update in usingDocs.mdc:
+- Add to CRM section: `CustomerFeedbackItem.md` - Customer feedback and reviews
+- Consider adding a practical example if frequently used
+- Update entity count in comments if tracked
+```
+
+### 2. New Modules Are Created
+
+**Actions required:**
+- Add a new module section under "Main Modules & Entities"
+- List all entities in the new module with descriptions
+- Describe the module's purpose and scope
+- Add practical examples for key entities
+- Update Context7 integration notes if new libraries are used
+
+**Example:**
+```markdown
+# New module: WAREHOUSE - Warehouse Management
+
+Update in usingDocs.mdc:
+1. Create new section:
+   - **WAREHOUSE** - Warehouse Management:
+     - `WarehouseItem.md` - Warehouse locations
+     - `InventoryItem.md` - Inventory tracking
+     - `StockMovementItem.md` - Stock movements
+2. Add practical example for common warehouse operations
+3. Update workflow if warehouse has special handling
+```
+
+### 3. Entity Files Are Removed or Renamed
+
+**Actions required:**
+- Remove or update references in the entity list
+- Update any examples that reference the changed entity
+- Remove outdated troubleshooting entries
+- Add migration notes if applicable
+- Update "Critical Rules" if breaking changes occurred
+
+**Example:**
+```markdown
+# Deprecated: OldContractItem.md replaced by ContractV2Item.md
+
+Update in usingDocs.mdc:
+1. Remove `OldContractItem.md` from CRM section
+2. Ensure `ContractV2Item.md` is listed
+3. Update Example 1 if it referenced old contract entity
+4. Add migration note in "Critical Rules" if needed
+5. Update troubleshooting to reflect new schema
+```
+
+### 4. Documentation Structure Changes
+
+**Actions required:**
+- Update paths if `docs/model/` location changes
+- Modify instructions if documentation format changes
+- Update workflow steps if process changes
+- Revise "How to Use" section if file structure is different
+- Update all file path references
+
+**Example:**
+```markdown
+# Documentation moved from docs/model/ to docs/api-schema/
+
+Update in usingDocs.mdc:
+1. Change all references from `docs/model/` to `docs/api-schema/`
+2. Update "Documentation Sources" section with new path
+3. Verify all examples use correct paths
+4. Update workflow step 2 with new directory
+```
+
+### 5. New Patterns or Conventions Are Discovered
+
+**Actions required:**
+- Add to "Best Practices" section
+- Include in "Practical Examples" if significant
+- Document in "Troubleshooting" if it solves common issues
+- Update "Critical Rules" if it's a must-follow pattern
+- Add to "AI Assistant Workflow" if it changes the process
+
+**Example:**
+```markdown
+# New pattern: All date fields now use ISO 8601 with timezone
+
+Update in usingDocs.mdc:
+1. Add to "Data Types & Formats" in Critical Rules
+2. Update Best Practices with timezone handling
+3. Add troubleshooting entry for date format errors
+4. Update practical examples to show correct date format
+```
+
+### 6. API Schema Changes Affect Multiple Entities
+
+**Actions required:**
+- Update "Critical Rules" section
+- Modify "Data Types & Formats" if new types are introduced
+- Add warnings about breaking changes
+- Update all affected examples
+- Document migration path if needed
+- Add to troubleshooting section
+
+**Example:**
+```markdown
+# Breaking change: All ID fields now use string instead of UUID format
+
+Update in usingDocs.mdc:
+1. Update "Data Types & Formats" to reflect string IDs
+2. Add breaking change warning in Critical Rules
+3. Update all TypeScript examples (id: string instead of id?: string)
+4. Add troubleshooting for UUID migration
+5. Update Best Practices with new ID handling
+```
+
+## Update Process
+
+Follow these steps when updating `usingDocs.mdc`:
+
+### Step 1: Review the Entire File
+- Read through the complete file to understand current structure
+- Identify all sections that might be affected by the change
+- Note any inconsistencies or outdated information
+
+### Step 2: Update All Relevant Sections
+- Don't just update the entity list - check all sections
+- Update examples if they reference changed entities
+- Modify workflow steps if process has changed
+- Revise best practices if new patterns emerged
+- Add or remove troubleshooting entries as needed
+
+### Step 3: Check Examples for Accuracy
+- Verify that all code examples still work with current schema
+- Update TypeScript interfaces to match latest entity definitions
+- Ensure property names and types are correct
+- Check that enum values are still valid
+- Verify that required vs optional fields are accurate
+
+### Step 4: Verify Links and Paths
+- Confirm all file paths point to existing files
+- Check that entity references are spelled correctly
+- Verify module names match actual structure
+- Test that documentation files can be found at specified paths
+
+### Step 5: Test Workflow
+- Walk through the AI Assistant Workflow mentally
+- Ensure each step still makes sense with the changes
+- Verify that the workflow produces correct results
+- Check that Context7 integration is still properly explained
+
+### Step 6: Commit Changes with Clear Description
+- Write a descriptive commit message explaining what was updated
+- Reference the specific entities or modules that changed
+- Note if this is a breaking change or backwards compatible
+- Include migration notes if applicable
+
+## Verification Checklist
+
+Before considering the update complete, verify:
+
+- [ ] All new entities are listed in the correct module section
+- [ ] Removed entities are deleted from all sections (not just the list)
+- [ ] Examples still work with current schema
+- [ ] Paths to documentation files are correct and working
+- [ ] Workflow steps are still accurate and complete
+- [ ] Best practices reflect current patterns and conventions
+- [ ] Troubleshooting addresses current issues (not outdated ones)
+- [ ] No broken references to deleted or renamed entities
+- [ ] Module descriptions are up to date and accurate
+- [ ] Critical rules reflect current API behavior
+- [ ] Data types and formats match current API specifications
+- [ ] TypeScript examples use correct syntax and types
+- [ ] Context7 integration examples are still relevant
+- [ ] Property naming conventions are documented correctly
+- [ ] Required vs optional field information is accurate
+
+## Automation Possibilities
+
+Consider creating helper tools to maintain synchronization:
+
+### Suggested Script Functions
+
+1. **Documentation Scanner**
+   - Scan `docs/model/` directory for all `.md` files
+   - Extract entity names and modules from filenames
+   - Generate a list of all available entities
+
+2. **Comparison Tool**
+   - Compare scanned entities with those listed in `usingDocs.mdc`
+   - Report missing entities (in docs but not in guide)
+   - Report extra entries (in guide but not in docs)
+   - Flag renamed or moved files
+
+3. **Validation Tool**
+   - Check that all file paths in `usingDocs.mdc` are valid
+   - Verify that referenced entities exist in `docs/model/`
+   - Ensure module organization matches actual file structure
+   - Test that examples reference valid entities
+
+4. **Update Suggester**
+   - Propose additions for new entities found in `docs/model/`
+   - Suggest removals for entities no longer in documentation
+   - Generate template text for new module sections
+   - Create draft updates for the user to review
+
+### Implementation Note
+
+These scripts would help maintain accuracy but should not replace manual review. The AI assistant should still verify that updates are meaningful and accurate, not just mechanically synchronized.
+
+## Responsibility Matrix
+
+### The AI Assistant Is Responsible For:
+
+1. **Detection**
+   - Monitoring for documentation changes during work sessions
+   - Identifying when entities are added, removed, or modified
+   - Recognizing when patterns or conventions change
+   - Noticing when examples become outdated
+
+2. **Updating**
+   - Proactively updating `usingDocs.mdc` when changes are detected
+   - Following the complete update process (not just quick fixes)
+   - Using the verification checklist before completing updates
+   - Maintaining consistency across all sections
+
+3. **Communication**
+   - Alerting the user when manual review is needed
+   - Explaining what was changed and why
+   - Asking for clarification on ambiguous changes
+   - Documenting breaking changes clearly
+
+4. **Quality**
+   - Ensuring accuracy and consistency of the file
+   - Checking that all examples still work
+   - Verifying that best practices are current
+   - Maintaining clear and helpful documentation
+
+### The User Should:
+
+1. **Review**
+   - Review AI-proposed updates before committing
+   - Verify that technical details are accurate
+   - Ensure that business logic is correctly represented
+   - Check that examples reflect real-world usage
+
+2. **Trigger Updates**
+   - Manually trigger updates after bulk documentation changes
+   - Inform the AI when major refactoring occurs
+   - Request updates when adding new modules or features
+   - Alert the AI to breaking changes
+
+3. **Audit**
+   - Periodically audit the file for accuracy
+   - Check that it reflects current development practices
+   - Verify that new team members can use it effectively
+   - Ensure that examples are helpful and correct
+
+4. **Report Issues**
+   - Report any discrepancies between guide and actual documentation
+   - Provide feedback on unclear or incorrect sections
+   - Suggest improvements to examples or explanations
+   - Request clarification when documentation is ambiguous
+
+## Integration with Development Workflow
+
+### During Feature Development
+
+When adding new features that involve API entities:
+1. Create or update entity documentation in `docs/model/`
+2. Immediately update `usingDocs.mdc` to reflect the new entity
+3. Add examples if the entity is commonly used
+4. Document any new patterns or conventions discovered
+
+### During Code Review
+
+Reviewers should check:
+1. If new entities were added, is `usingDocs.mdc` updated?
+2. Are the examples in the guide still accurate?
+3. Do the documented patterns match the implementation?
+4. Are breaking changes properly documented?
+
+### During Refactoring
+
+When refactoring entities or API schemas:
+1. Update entity documentation in `docs/model/` first
+2. Update `usingDocs.mdc` with the changes
+3. Add migration notes if there are breaking changes
+4. Update troubleshooting for common migration issues
+
+### During Onboarding
+
+New team members should:
+1. Read `usingDocs.mdc` to understand documentation structure
+2. Use it as a guide when working with API entities
+3. Report any confusion or outdated information
+4. Contribute improvements based on their experience
+
+## Warning Signs of Desynchronization
+
+Watch for these indicators that the guide is out of sync:
+
+1. **Entity Not Found Errors**
+   - Guide references entities that don't exist in `docs/model/`
+   - Examples use properties that aren't in the schema
+   - Module names don't match actual organization
+
+2. **Implementation Errors**
+   - Following the guide leads to API validation errors
+   - TypeScript types don't match actual API responses
+   - Required fields aren't documented as required
+
+3. **Missing Information**
+   - New entities exist but aren't in the guide
+   - Recent pattern changes aren't documented
+   - New modules or features aren't mentioned
+
+4. **Confusion**
+   - Team members report that guide doesn't match reality
+   - Examples produce unexpected results
+   - Workflow steps don't work as described
+
+When any of these occur, stop and perform a complete audit and update of `usingDocs.mdc`.
+
+## Success Criteria
+
+The documentation guide is considered synchronized when:
+
+- ✅ All entities in `docs/model/` are listed in `usingDocs.mdc`
+- ✅ No references to non-existent entities
+- ✅ All examples work with current API schemas
+- ✅ Workflow steps produce expected results
+- ✅ Best practices reflect current development patterns
+- ✅ Troubleshooting addresses current issues
+- ✅ New team members can successfully use the guide
+- ✅ Following the guide leads to correct implementations
+- ✅ No confusion about how to use documentation
+- ✅ The guide is updated within the same PR as documentation changes
+
+## Maintenance Schedule
+
+### Immediate (Same Session/PR)
+- Entity additions, removals, or renames
+- Breaking changes to API schemas
+- New modules or major features
+
+### Regular (Weekly)
+- Review for minor inconsistencies
+- Update examples with better practices
+- Add troubleshooting for newly discovered issues
+
+### Periodic (Monthly)
+- Complete audit of all sections
+- Verify all links and references
+- Update based on team feedback
+- Improve clarity and organization
+
+### As Needed
+- When confusion is reported
+- After major refactoring
+- During onboarding of new team members
+- When development patterns evolve

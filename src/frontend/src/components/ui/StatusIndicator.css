@@ -1,0 +1,87 @@
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-md);
+  font-weight: 500;
+}
+
+.status-indicator.size-sm {
+  font-size: 0.75rem;
+  padding: 2px var(--spacing-xs);
+}
+
+.status-indicator.size-md {
+  font-size: 0.875rem;
+}
+
+.status-indicator.size-lg {
+  font-size: 1rem;
+  padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.status-icon {
+  display: inline-block;
+  font-weight: 700;
+}
+
+.status-label {
+  /* Убрали capitalize для корректного отображения русских текстов */
+}
+
+.status-healthy {
+  background-color: var(--color-healthy-light);
+  color: var(--color-healthy-dark);
+}
+
+.status-degraded {
+  background-color: var(--color-degraded-light);
+  color: var(--color-degraded-dark);
+}
+
+.status-unhealthy {
+  background-color: var(--color-unhealthy-light);
+  color: var(--color-unhealthy-dark);
+}
+
+.status-unknown {
+  background-color: var(--color-unknown-light);
+  color: var(--color-unknown-dark);
+}
+
+/* Badge variant */
+.status-indicator.badge {
+  border-radius: 9999px;
+  padding: var(--spacing-xs) var(--spacing-md);
+}
+
+/* Dot variant */
+.status-indicator.dot {
+  padding: 0;
+  background: none;
+}
+
+.status-indicator.dot .status-icon {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-indicator.dot.status-healthy .status-icon {
+  background-color: var(--color-healthy);
+}
+
+.status-indicator.dot.status-degraded .status-icon {
+  background-color: var(--color-degraded);
+}
+
+.status-indicator.dot.status-unhealthy .status-icon {
+  background-color: var(--color-unhealthy);
+}
+
+.status-indicator.dot.status-unknown .status-icon {
+  background-color: var(--color-unknown);
+}
+
