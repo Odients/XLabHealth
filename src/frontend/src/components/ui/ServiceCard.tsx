@@ -17,18 +17,6 @@ const ServiceCard = ({ service, clickable = true }: ServiceCardProps) => {
     return formatRelativeTime(service.lastCheckedAt);
   };
 
-  const getServiceTypeLabel = (type: ServiceType): string => {
-    const typeLabels: Record<ServiceType, string> = {
-      [ServiceType.Http]: 'HTTP',
-      [ServiceType.Tcp]: 'TCP',
-      [ServiceType.Database]: 'База данных',
-      [ServiceType.Redis]: 'Redis',
-      [ServiceType.WindowsService]: 'Windows Service',
-      [ServiceType.Kafka]: 'Kafka',
-      [ServiceType.Custom]: 'Пользовательский',
-    };
-    return typeLabels[type] || 'Неизвестно';
-  };
 
   const getServiceTypeIcon = (type: ServiceType): string => {
     const typeIcons: Record<ServiceType, string> = {
@@ -62,7 +50,7 @@ const ServiceCard = ({ service, clickable = true }: ServiceCardProps) => {
     // Получаем значение type напрямую из объекта и парсим его
     const typeValue = (fullService as unknown as Record<string, unknown>).type;
     if (typeValue !== undefined && typeValue !== null) {
-      serviceType = parseServiceType(typeValue);
+      serviceType = parseServiceType(typeValue as string | number | ServiceType | null | undefined);
     }
   }
 

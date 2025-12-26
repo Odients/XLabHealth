@@ -6,7 +6,7 @@ import StatusIndicator from '@/components/ui/StatusIndicator';
 import ServiceForm from './ServiceForm';
 import { ServiceType, ServiceDto, ServiceCreateDto, ServiceUpdateDto, HealthStatus } from '@/types';
 import { formatDateTimeWithTimezone } from '@/utils/date';
-import { parseServiceType, getServiceTypeLabel, parseHealthStatus } from '@/utils/status';
+import { parseServiceType, getServiceTypeLabel } from '@/utils/status';
 import './ServicesManagement.css';
 
 const ServicesManagement = () => {
