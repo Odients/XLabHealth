@@ -45,7 +45,12 @@ public class WindowsServiceHealthCheckProvider : IHealthCheckProvider
                 return result;
             }
 
-            config = JsonSerializer.Deserialize<WindowsServiceConfig>(service.Configuration.Parameters);
+            // Десериализуем JSON с учетом регистра (camelCase от фронтенда)
+            var jsonOptions = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            config = JsonSerializer.Deserialize<WindowsServiceConfig>(service.Configuration.Parameters, jsonOptions);
             if (config == null || string.IsNullOrEmpty(config.ServiceName))
             {
                 result.Status = HealthStatus.Unhealthy;

@@ -6,6 +6,7 @@ import StatusIndicator from '@/components/ui/StatusIndicator';
 import BackendUnavailable from '@/components/ui/BackendUnavailable';
 import { formatRelativeTime, formatDateTime } from '@/utils/date';
 import { isBackendUnavailable } from '@/utils/backend';
+import { parseHealthStatus } from '@/utils/status';
 import { ServiceStatusChangedEvent } from '@/types';
 import './ServiceDetailPage.css';
 
@@ -66,6 +67,9 @@ const ServiceDetailPage = () => {
     );
   }
 
+  // Парсим статус для правильного отображения
+  const status = parseHealthStatus(service.lastStatus);
+
   return (
     <div className="service-detail-page">
       <div className="service-header">
@@ -73,9 +77,7 @@ const ServiceDetailPage = () => {
           <h1>{service.name}</h1>
           {service.description && <p className="service-description">{service.description}</p>}
         </div>
-        {service.lastStatus !== undefined && (
-          <StatusIndicator status={service.lastStatus} size="lg" showLabel />
-        )}
+        <StatusIndicator status={status} size="lg" showLabel />
       </div>
 
       <div className="service-info-grid">
@@ -140,24 +142,27 @@ const ServiceDetailPage = () => {
         <div className="history-section">
           <h2>История проверок</h2>
           <div className="history-list">
-            {history.slice(0, 20).map((result) => (
-              <div key={result.id} className="history-item">
-                <StatusIndicator status={result.status} size="sm" />
-                <div className="history-info">
-                  <span className="history-time">
-                    {new Date(result.checkedAt).toLocaleString('ru-RU')}
-                  </span>
-                  {result.responseTime && (
-                    <span className="history-response-time">
-                      {result.responseTime} мс
+            {history.slice(0, 20).map((result) => {
+              const historyStatus = parseHealthStatus(result.status);
+              return (
+                <div key={result.id} className="history-item">
+                  <StatusIndicator status={historyStatus} size="sm" />
+                  <div className="history-info">
+                    <span className="history-time">
+                      {new Date(result.checkedAt).toLocaleString('ru-RU')}
                     </span>
-                  )}
-                  {result.message && (
-                    <span className="history-message">{result.message}</span>
-                  )}
+                    {result.responseTime && (
+                      <span className="history-response-time">
+                        {result.responseTime} мс
+                      </span>
+                    )}
+                    {result.message && (
+                      <span className="history-message">{result.message}</span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

@@ -41,7 +41,12 @@ public class RedisHealthCheckProvider : IHealthCheckProvider
                 return result;
             }
 
-            var config = JsonSerializer.Deserialize<RedisConfig>(service.Configuration.Parameters);
+            // Десериализуем JSON с учетом регистра (camelCase от фронтенда)
+            var jsonOptions = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            var config = JsonSerializer.Deserialize<RedisConfig>(service.Configuration.Parameters, jsonOptions);
             if (config == null)
             {
                 result.Status = HealthStatus.Unhealthy;
