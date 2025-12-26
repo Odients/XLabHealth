@@ -15,7 +15,7 @@ import { formatDateTimeLocalized } from '@/utils/date';
 import './PublicDashboard.css';
 
 const PublicDashboard = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
   const [clientIp, setClientIp] = useState<string | null>(null);
