@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { HubConnectionState } from '@microsoft/signalr';
 import { createSignalRConnection, SIGNALR_HUB_URL } from '@/config/signalr';
 import type { ServiceStatusChangedEvent } from '@/types';
@@ -121,7 +121,7 @@ export const useSignalR = () => {
               console.error('Error name:', error.name);
               console.error('Error stack:', error.stack);
               if ('cause' in error) {
-                console.error('Error cause:', (error as any).cause);
+                console.error('Error cause:', (error as Error & { cause?: unknown }).cause);
               }
             }
             console.groupEnd();
@@ -176,7 +176,7 @@ export const useSignalR = () => {
                   console.debug('[SignalR] Error details:', {
                     name: error.name,
                     message: error.message,
-                    cause: error.cause,
+                    cause: (error as Error & { cause?: unknown }).cause,
                   });
                 }
               }, 100);
@@ -214,7 +214,7 @@ export const useSignalR = () => {
             logStateChange(HubConnectionState.Disconnected, 'connection closed');
             console.warn('[SignalR] ⚠️ Connection closed with error:', {
               error: error.message || String(error),
-              allowReconnect: error?.allowReconnect ?? false,
+              allowReconnect: (error as Error & { allowReconnect?: boolean })?.allowReconnect ?? false,
             });
           }
         } else {
@@ -317,13 +317,15 @@ export const useServiceStatusUpdates = (
       console.debug('[SignalR] Subscribing to ServiceStatusChanged events');
     }
 
+    if (!connection) return;
+
     const handler = (event: ServiceStatusChangedEvent) => {
       // Логируем получение событий только в development
       if (isDevelopment) {
         console.debug('[SignalR] Received ServiceStatusChanged event:', {
           serviceId: event.serviceId,
           status: event.status,
-          timestamp: event.timestamp,
+          checkedAt: event.checkedAt,
         });
       }
       onStatusChanged?.(event);
@@ -336,7 +338,9 @@ export const useServiceStatusUpdates = (
       if (isDevelopment) {
         console.debug('[SignalR] Unsubscribing from ServiceStatusChanged events');
       }
-      connection.off('ServiceStatusChanged', handler);
+      if (connection) {
+        connection.off('ServiceStatusChanged', handler);
+      }
     };
   }, [connection, connectionState, onStatusChanged]);
 };

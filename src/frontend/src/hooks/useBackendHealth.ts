@@ -1,11 +1,10 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { publicApi } from '@/services/api';
 import { isBackendUnavailable } from '@/utils/backend';
 
 // Глобальные переменные для управления одним экземпляром проверки
 let globalBackendAvailable: boolean = false;
 let healthListeners: Set<(available: boolean) => void> = new Set();
-let healthCheckInterval: ReturnType<typeof setInterval> | null = null;
 let isHealthCheckInitialized = false;
 
 const HEALTH_CHECK_INTERVAL = 5000; // Проверяем каждые 5 секунд
@@ -69,7 +68,7 @@ export const useBackendHealth = () => {
       checkBackendHealth();
 
       // Настраиваем периодическую проверку
-      healthCheckInterval = setInterval(checkBackendHealth, HEALTH_CHECK_INTERVAL);
+      setInterval(checkBackendHealth, HEALTH_CHECK_INTERVAL);
     }
 
     return () => {

@@ -346,8 +346,7 @@ const AnalyticsDatabaseCharts = ({ analytics, period }: AnalyticsDatabaseChartsP
                         strokeWidth={2}
                         strokeDasharray="5 5"
                         name="Прогноз общего размера"
-                        dot={true}
-                        dotStyle={{ fill: '#8b5cf6', r: 4 }}
+                        dot={{ fill: '#8b5cf6', r: 4 }}
                         connectNulls={false}
                       />
                       <Line 
@@ -366,8 +365,7 @@ const AnalyticsDatabaseCharts = ({ analytics, period }: AnalyticsDatabaseChartsP
                         strokeWidth={2}
                         strokeDasharray="5 5"
                         name="Прогноз используемого пространства"
-                        dot={true}
-                        dotStyle={{ fill: '#f87171', r: 4 }}
+                        dot={{ fill: '#f87171', r: 4 }}
                         connectNulls={false}
                       />
                     </LineChart>

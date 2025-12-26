@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { analyticsApi } from '@/services/api';
-import { AnalyticsDto, ServiceStatusChangedEvent } from '@/types';
+import { AnalyticsDto } from '@/types';
 import { useServiceStatusUpdates } from '@/hooks/useSignalR';
 import BackendUnavailable from '@/components/ui/BackendUnavailable';
 import AnalyticsKPICards from '@/components/analytics/AnalyticsKPICards';
@@ -20,7 +20,7 @@ const AnalyticsPage = () => {
   });
 
   // Подписка на обновления через SignalR
-  useServiceStatusUpdates((event: ServiceStatusChangedEvent) => {
+  useServiceStatusUpdates(() => {
     // Обновляем аналитику при изменении статуса любого сервиса
     refetch();
   });

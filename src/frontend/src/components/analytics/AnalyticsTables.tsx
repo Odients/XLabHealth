@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AnalyticsDto, ServiceAnalyticsDto, IncidentDto, HealthStatus, ServiceType } from '@/types';
+import { AnalyticsDto, HealthStatus, ServiceType } from '@/types';
 import { formatDateTimeWithTimezone } from '@/utils/date';
 import './AnalyticsTables.css';
 

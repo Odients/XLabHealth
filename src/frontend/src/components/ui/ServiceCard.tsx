@@ -8,10 +8,9 @@ import './ServiceCard.css';
 
 interface ServiceCardProps {
   service: PublicServiceDto | ServiceDto;
-  isPublic?: boolean;
 }
 
-const ServiceCard = ({ service, isPublic = false }: ServiceCardProps) => {
+const ServiceCard = ({ service }: ServiceCardProps) => {
   const getLastCheckedText = () => {
     if (!service.lastCheckedAt) return 'Никогда не проверялся';
     return formatRelativeTime(service.lastCheckedAt);
@@ -60,7 +59,7 @@ const ServiceCard = ({ service, isPublic = false }: ServiceCardProps) => {
   if (isFullService) {
     const fullService = service as ServiceDto;
     // Получаем значение type напрямую из объекта
-    const typeValue = (fullService as Record<string, unknown>).type;
+    const typeValue = (fullService as unknown as Record<string, unknown>).type;
     
     // Обрабатываем разные форматы: число (0, 1, 2...) или строка ("http", "tcp", ...)
     if (typeValue !== undefined && typeValue !== null) {
