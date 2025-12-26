@@ -322,7 +322,7 @@ const AnalyticsDatabaseCharts = ({ analytics, period }: AnalyticsDatabaseChartsP
                           if (typeof value === 'string') return formatDate(value);
                           return formatDate(new Date(value).toISOString());
                         }}
-                        formatter={(value: number, name: string, props: any) => {
+                        formatter={(value: number, name: string) => {
                           if (!value || value === 0) return ['-', name];
                           return [formatSize(value), name];
                         }}
