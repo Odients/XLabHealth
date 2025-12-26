@@ -1,5 +1,5 @@
 import { AnalyticsDto } from '@/types';
-import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ComposedChart, Bar } from 'recharts';
+import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ComposedChart } from 'recharts';
 import './AnalyticsDatabaseCharts.css';
 
 interface AnalyticsDatabaseChartsProps {
@@ -68,7 +68,6 @@ const AnalyticsDatabaseCharts = ({ analytics, period }: AnalyticsDatabaseChartsP
       {services.map(([serviceId, points]) => {
         const serviceName = points[0]?.serviceName || serviceId;
         const forecastPoints = forecastMap.get(serviceId) || [];
-        const lastPoint = points[points.length - 1];
         
         // Объединяем исторические данные и прогноз для графика
         const combinedData = [
@@ -144,7 +143,7 @@ const AnalyticsDatabaseCharts = ({ analytics, period }: AnalyticsDatabaseChartsP
                         if (typeof value === 'string') return formatDate(value);
                         return formatDate(new Date(value).toISOString());
                       }}
-                      formatter={(value: number, name: string, props: any) => {
+                      formatter={(value: number, name: string) => {
                         if (!value || value === 0) return ['-', name];
                         return [formatSize(value), name];
                       }}
@@ -270,7 +269,7 @@ const AnalyticsDatabaseCharts = ({ analytics, period }: AnalyticsDatabaseChartsP
                         if (typeof value === 'string') return formatDate(value);
                         return formatDate(new Date(value).toISOString());
                       }}
-                      formatter={(value: number, name: string, props: any) => {
+                      formatter={(value: number, name: string) => {
                         if (!value || value === 0) return ['-', name];
                         return [`${value.toFixed(2)}%`, name];
                       }}

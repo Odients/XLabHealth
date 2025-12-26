@@ -91,7 +91,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
 
     isAdmin: () => {
       const { user } = get();
-      return user?.role === 'Admin' ?? false;
+      return user?.role === 'Admin';
     },
 
     initialize: () => {

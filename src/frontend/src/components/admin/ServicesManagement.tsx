@@ -85,6 +85,14 @@ const ServicesManagement = () => {
     updateMutation.mutate({ id: editingService.id, data });
   };
 
+  const handleSubmit = (data: ServiceCreateDto | ServiceUpdateDto) => {
+    if (editingService) {
+      handleUpdate(data as ServiceUpdateDto);
+    } else {
+      handleCreate(data as ServiceCreateDto);
+    }
+  };
+
   const handleEdit = (service: ServiceDto) => {
     setEditingService(service);
   };
@@ -387,7 +395,7 @@ const ServicesManagement = () => {
             <h2>{editingService ? 'Редактировать сервис' : 'Добавить сервис'}</h2>
             <ServiceForm
               service={editingService || undefined}
-              onSubmit={editingService ? handleUpdate : handleCreate}
+              onSubmit={handleSubmit}
               onCancel={handleCancel}
               isLoading={createMutation.isPending || updateMutation.isPending}
             />

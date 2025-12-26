@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { maintenanceApi } from '@/services/api';
 import { toast } from 'react-toastify';
-import type { MaintenanceModeDto, MaintenanceModeEnableDto } from '@/types';
+import type { MaintenanceModeEnableDto } from '@/types';
 import './MaintenanceManagement.css';
 
 const DEFAULT_MAINTENANCE_MESSAGE =

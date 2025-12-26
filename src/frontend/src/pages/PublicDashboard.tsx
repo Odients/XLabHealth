@@ -169,7 +169,7 @@ const PublicDashboard = () => {
           {services && services.length > 0 ? (
             <div className="services-grid">
               {services.map((service) => (
-                <ServiceCard key={service.id} service={service} isPublic />
+                <ServiceCard key={service.id} service={service} />
               ))}
             </div>
           ) : (

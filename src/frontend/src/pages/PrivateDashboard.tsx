@@ -5,10 +5,9 @@ import { useServiceStatusUpdates } from '@/hooks/useSignalR';
 import ServiceCard from '@/components/ui/ServiceCard';
 import StatusIndicator from '@/components/ui/StatusIndicator';
 import BackendUnavailable from '@/components/ui/BackendUnavailable';
-import { HealthStatus, ServiceStatusChangedEvent } from '@/types';
+import { HealthStatus } from '@/types';
 import { parseHealthStatus } from '@/utils/status';
 import { isBackendUnavailable } from '@/utils/backend';
-import { toast } from 'react-toastify';
 import './PrivateDashboard.css';
 
 const PrivateDashboard = () => {
@@ -21,7 +20,7 @@ const PrivateDashboard = () => {
   });
 
   // Подписка на обновления через SignalR
-  useServiceStatusUpdates((event: ServiceStatusChangedEvent) => {
+  useServiceStatusUpdates(() => {
     // Обновляем данные при получении события от SignalR
     refetch();
   });
