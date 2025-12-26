@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { AnalyticsDto, HealthStatus, ServiceType } from '@/types';
+import { AnalyticsDto, HealthStatus } from '@/types';
 import { formatDateTimeWithTimezone } from '@/utils/date';
+import { getServiceTypeLabel } from '@/utils/status';
 import './AnalyticsTables.css';
 
 interface AnalyticsTablesProps {
@@ -78,19 +79,6 @@ const AnalyticsTables = ({ analytics }: AnalyticsTablesProps) => {
     }
   };
 
-  const getServiceTypeLabel = (type: ServiceType | number | string): string => {
-    const typeNum = typeof type === 'number' ? type : parseInt(String(type));
-    switch (typeNum) {
-      case ServiceType.Http: return 'HTTP/HTTPS';
-      case ServiceType.Tcp: return 'TCP';
-      case ServiceType.Database: return 'База данных';
-      case ServiceType.Redis: return 'Redis';
-      case ServiceType.WindowsService: return 'Windows Service';
-      case ServiceType.Kafka: return 'Kafka';
-      case ServiceType.Custom: return 'Пользовательский';
-      default: return 'Неизвестно';
-    }
-  };
 
   return (
     <div className="analytics-tables">
