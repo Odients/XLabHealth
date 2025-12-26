@@ -6,6 +6,7 @@ import StatusIndicator from '@/components/ui/StatusIndicator';
 import ServiceForm from './ServiceForm';
 import { ServiceType, ServiceDto, ServiceCreateDto, ServiceUpdateDto, HealthStatus } from '@/types';
 import { formatDateTimeWithTimezone } from '@/utils/date';
+import { parseServiceType, getServiceTypeLabel, parseHealthStatus } from '@/utils/status';
 import './ServicesManagement.css';
 
 const ServicesManagement = () => {
@@ -118,65 +119,8 @@ const ServicesManagement = () => {
     }
   };
 
-  // Маппинг строковых значений типа сервиса в enum
-  const parseServiceType = (type: string | number | null | undefined): ServiceType => {
-    if (type === null || type === undefined) {
-      return ServiceType.Custom;
-    }
-    
-    // Если это уже число, проверяем валидность
-    if (typeof type === 'number') {
-      if (type >= 0 && type <= 6) {
-        return type as ServiceType;
-      }
-      return ServiceType.Custom;
-    }
-    
-    // Преобразуем строку в enum
-    // Сначала проверяем точное совпадение (для camelCase и PascalCase)
-    const exactMatch: Record<string, ServiceType> = {
-      'windowsService': ServiceType.WindowsService,
-      'WindowsService': ServiceType.WindowsService,
-      'http': ServiceType.Http,
-      'Http': ServiceType.Http,
-      'https': ServiceType.Http,
-      'Https': ServiceType.Http,
-      'tcp': ServiceType.Tcp,
-      'Tcp': ServiceType.Tcp,
-      'database': ServiceType.Database,
-      'Database': ServiceType.Database,
-      'redis': ServiceType.Redis,
-      'Redis': ServiceType.Redis,
-      'kafka': ServiceType.Kafka,
-      'Kafka': ServiceType.Kafka,
-      'custom': ServiceType.Custom,
-      'Custom': ServiceType.Custom,
-    };
-    
-    // Проверяем точное совпадение
-    if (exactMatch[type]) {
-      return exactMatch[type];
-    }
-    
-    // Затем проверяем lowercase версию
-    const typeLower = type.toLowerCase();
-    const typeMap: Record<string, ServiceType> = {
-      'http': ServiceType.Http,
-      'https': ServiceType.Http,
-      'tcp': ServiceType.Tcp,
-      'database': ServiceType.Database,
-      'redis': ServiceType.Redis,
-      'windowsservice': ServiceType.WindowsService, // после toLowerCase()
-      'windows-service': ServiceType.WindowsService, // на случай kebab-case
-      'kafka': ServiceType.Kafka,
-      'custom': ServiceType.Custom,
-    };
-    
-    return typeMap[typeLower] ?? ServiceType.Custom;
-  };
-
-  // Маппинг строковых значений статуса в enum
-  const parseHealthStatus = (status: string | number | null | undefined): HealthStatus => {
+  // Маппинг строковых значений статуса в enum (локальная версия для обратной совместимости)
+  const parseHealthStatusLocal = (status: string | number | null | undefined): HealthStatus => {
     if (status === null || status === undefined) {
       return HealthStatus.Unknown;
     }
@@ -203,22 +147,6 @@ const ServicesManagement = () => {
     };
     
     return statusMap[status.toLowerCase()] ?? HealthStatus.Unknown;
-  };
-
-  const getServiceTypeLabel = (type: ServiceType | number | string | null | undefined): string => {
-    // Нормализуем тип к числу
-    const normalizedType = parseServiceType(type);
-    
-    const typeLabels: Record<ServiceType, string> = {
-      [ServiceType.Http]: 'HTTP/HTTPS',
-      [ServiceType.Tcp]: 'TCP',
-      [ServiceType.Database]: 'База данных',
-      [ServiceType.Redis]: 'Redis',
-      [ServiceType.WindowsService]: 'Windows Service',
-      [ServiceType.Kafka]: 'Kafka',
-      [ServiceType.Custom]: 'Пользовательский',
-    };
-    return typeLabels[normalizedType] ?? 'Неизвестно';
   };
 
   const getServiceTypeIcon = (type: ServiceType | number | string | null | undefined): string => {
@@ -281,7 +209,7 @@ const ServicesManagement = () => {
               const serviceType = parseServiceType(service.type);
               
               // Преобразуем статус - может прийти как строка или число
-              const status = parseHealthStatus(service.lastStatus);
+              const status = parseHealthStatusLocal(service.lastStatus);
               
               return (
                 <div key={service.id} className="service-admin-card">

@@ -63,7 +63,13 @@ export const parseServiceType = (
 
   // Преобразуем строку в enum
   if (typeof type === 'string') {
-    // Сначала проверяем точные совпадения (регистрозависимо)
+    // Сначала проверяем, является ли это числовой строкой (enum может сериализоваться как "0", "1", "2" и т.д.)
+    const numericValue = parseInt(type, 10);
+    if (!isNaN(numericValue) && numericValue >= 0 && numericValue <= 6) {
+      return numericValue as ServiceType;
+    }
+
+    // Затем проверяем точные совпадения (регистрозависимо)
     const exactMatch: Record<string, ServiceType> = {
       'Http': ServiceType.Http,
       'WindowsService': ServiceType.WindowsService,

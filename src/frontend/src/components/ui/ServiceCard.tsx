@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { formatRelativeTime } from '@/utils/date';
-import { parseHealthStatus } from '@/utils/status';
+import { parseHealthStatus, parseServiceType, getServiceTypeLabel } from '@/utils/status';
 import StatusIndicator from './StatusIndicator';
 import { ServiceType, HealthStatus } from '@/types';
 import type { PublicServiceDto, ServiceDto } from '@/types';
@@ -59,29 +59,10 @@ const ServiceCard = ({ service, clickable = true }: ServiceCardProps) => {
   let serviceType: ServiceType | null = null;
   if (isFullService) {
     const fullService = service as ServiceDto;
-    // Получаем значение type напрямую из объекта
+    // Получаем значение type напрямую из объекта и парсим его
     const typeValue = (fullService as unknown as Record<string, unknown>).type;
-    
-    // Обрабатываем разные форматы: число (0, 1, 2...) или строка ("http", "tcp", ...)
     if (typeValue !== undefined && typeValue !== null) {
-      if (typeof typeValue === 'number') {
-        // Если это число, используем напрямую
-        serviceType = typeValue as ServiceType;
-      } else if (typeof typeValue === 'string') {
-        // Если это строка (camelCase enum), конвертируем в число
-        const stringValue = typeValue.toLowerCase();
-        // Маппинг строковых значений enum (camelCase) в числовые значения
-        const enumMap: Record<string, ServiceType> = {
-          'http': ServiceType.Http,
-          'tcp': ServiceType.Tcp,
-          'database': ServiceType.Database,
-          'redis': ServiceType.Redis,
-          'windowsservice': ServiceType.WindowsService, // после toLowerCase()
-          'kafka': ServiceType.Kafka,
-          'custom': ServiceType.Custom,
-        };
-        serviceType = enumMap[stringValue] ?? null;
-      }
+      serviceType = parseServiceType(typeValue);
     }
   }
 

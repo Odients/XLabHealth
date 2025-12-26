@@ -6,7 +6,7 @@ import StatusIndicator from '@/components/ui/StatusIndicator';
 import BackendUnavailable from '@/components/ui/BackendUnavailable';
 import { formatRelativeTime, formatDateTime } from '@/utils/date';
 import { isBackendUnavailable } from '@/utils/backend';
-import { parseHealthStatus } from '@/utils/status';
+import { parseHealthStatus, getServiceTypeLabel } from '@/utils/status';
 import { ServiceStatusChangedEvent } from '@/types';
 import './ServiceDetailPage.css';
 
@@ -89,7 +89,7 @@ const ServiceDetailPage = () => {
           </div>
           <div className="info-item">
             <span className="info-label">Тип:</span>
-            <span className="info-value">{service.type}</span>
+            <span className="info-value">{getServiceTypeLabel(service.type)}</span>
           </div>
           <div className="info-item">
             <span className="info-label">Интервал проверки:</span>
