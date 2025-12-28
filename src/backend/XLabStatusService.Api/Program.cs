@@ -98,6 +98,9 @@ builder.Services.AddScoped<XLabStatusService.Application.Services.AnalyticsServi
 // API Services
 builder.Services.AddScoped<XLabStatusService.Core.Interfaces.INotificationService, XLabStatusService.Api.Services.SignalRNotificationService>();
 
+// reCAPTCHA Service
+builder.Services.AddHttpClient<XLabStatusService.Core.Interfaces.IRecaptchaService, XLabStatusService.Infrastructure.Services.RecaptchaService>();
+
 // JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var secretKey = jwtSettings["SecretKey"] ?? "YourSuperSecretKeyThatShouldBeAtLeast32CharactersLong!";

@@ -8,6 +8,8 @@ import { useTranslation } from 'react-i18next';
 import { authApi } from '@/services/api';
 import { useAuthStore } from '@/store/authStore';
 import { isBackendUnavailable } from '@/utils/backend';
+import { useRecaptcha } from '@/hooks/useRecaptcha';
+import { LoginDto } from '@/types';
 import './LoginPage.css';
 
 type LoginFormData = {
@@ -20,6 +22,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { setUser } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
+  const { getToken } = useRecaptcha();
 
   const loginSchema = useMemo(
     () =>
@@ -41,7 +44,16 @@ const LoginPage = () => {
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
     try {
-      const response = await authApi.login(data);
+      // Получаем токен reCAPTCHA перед отправкой формы
+      const recaptchaToken = await getToken('login');
+      
+      // Отправляем данные логина с токеном reCAPTCHA (если доступен)
+      const loginData: LoginDto = {
+        ...data,
+        ...(recaptchaToken && { recaptchaToken }),
+      };
+      
+      const response = await authApi.login(loginData);
       localStorage.setItem('accessToken', response.accessToken);
       localStorage.setItem('refreshToken', response.refreshToken);
       // setUser сохранит пользователя в localStorage автоматически

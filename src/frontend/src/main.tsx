@@ -6,6 +6,7 @@ import { ToastContainer } from 'react-toastify';
 import App from './App';
 import { getClientIp } from './utils/clientIp';
 import { initGoogleTagManager } from './utils/gtm';
+import { initRecaptcha } from './utils/recaptcha';
 import './i18n/config';
 import './styles/index.css';
 import 'react-toastify/dist/ReactToastify.css';
@@ -18,6 +19,11 @@ getClientIp().catch((error) => {
 
 // Инициализируем Google Tag Manager
 initGoogleTagManager();
+
+// Инициализируем Google reCAPTCHA v3
+initRecaptcha().catch((error) => {
+  console.warn('Failed to initialize reCAPTCHA:', error);
+});
 
 const queryClient = new QueryClient({
   defaultOptions: {

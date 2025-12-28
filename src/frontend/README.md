@@ -45,9 +45,12 @@ npm run build
 VITE_API_URL=http://localhost:5021
 VITE_FRONTEND_URL=https://localhost:7146
 VITE_GOOGLE_TAG_ID=GTM-XXXXXXX
+VITE_RECAPTCHA_SITE_KEY=6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI
 ```
 
-**Примечание**: `VITE_GOOGLE_TAG_ID` - опциональная переменная. Если не указана, Google Tag Manager не будет инициализирован.
+**Примечания**:
+- `VITE_GOOGLE_TAG_ID` - опциональная переменная. Если не указана, Google Tag Manager не будет инициализирован.
+- `VITE_RECAPTCHA_SITE_KEY` - опциональная переменная. Если не указана, Google reCAPTCHA v3 не будет инициализирован. Для получения ключа зарегистрируйте сайт на [Google reCAPTCHA](https://www.google.com/recaptcha/admin).
 
 ## Структура проекта
 

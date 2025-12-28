@@ -66,6 +66,7 @@ export interface HealthCheckResultDto {
 export interface LoginDto {
   username: string;
   password: string;
+  recaptchaToken?: string;
 }
 
 export interface AuthResponseDto {

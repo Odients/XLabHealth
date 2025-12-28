@@ -20,6 +20,7 @@ public class AuthService
     private readonly IRefreshTokenRepository _refreshTokenRepository;
     private readonly ILoginAttemptRepository _loginAttemptRepository;
     private readonly IBlockedIpRepository _blockedIpRepository;
+    private readonly IRecaptchaService? _recaptchaService;
     private readonly IConfiguration _configuration;
     private readonly ILogger<AuthService> _logger;
 
@@ -29,7 +30,8 @@ public class AuthService
         ILoginAttemptRepository loginAttemptRepository,
         IBlockedIpRepository blockedIpRepository,
         IConfiguration configuration,
-        ILogger<AuthService> logger)
+        ILogger<AuthService> logger,
+        IRecaptchaService? recaptchaService = null)
     {
         _userRepository = userRepository;
         _refreshTokenRepository = refreshTokenRepository;
@@ -37,6 +39,7 @@ public class AuthService
         _blockedIpRepository = blockedIpRepository;
         _configuration = configuration;
         _logger = logger;
+        _recaptchaService = recaptchaService;
     }
 
     public async Task<AuthResponseDto?> LoginAsync(LoginDto loginDto, string? ipAddress, CancellationToken cancellationToken = default)
@@ -49,6 +52,35 @@ public class AuthService
         var autoBlockAfterAttempts = bruteForceConfig.GetValue<int>("AutoBlockIpAfterAttempts", 10);
 
         var lockoutWindowStart = DateTime.UtcNow.AddMinutes(-lockoutWindowMinutes);
+
+        // Проверяем reCAPTCHA токен (если настроен и передан)
+        if (_recaptchaService != null && !string.IsNullOrWhiteSpace(loginDto.RecaptchaToken))
+        {
+            var recaptchaResult = await _recaptchaService.VerifyAsync(loginDto.RecaptchaToken, cancellationToken);
+            if (!recaptchaResult.Success)
+            {
+                _logger.LogWarning(
+                    "Login attempt blocked due to failed reCAPTCHA verification - Username: {Username}, IP: {IpAddress}, Score: {Score}, Errors: {Errors}",
+                    loginDto.Username, ipAddress, recaptchaResult.Score,
+                    recaptchaResult.ErrorCodes != null ? string.Join(", ", recaptchaResult.ErrorCodes) : "none");
+
+                await LogLoginAttemptAsync(ipAddress, loginDto.Username, false,
+                    $"reCAPTCHA verification failed (Score: {recaptchaResult.Score})", cancellationToken);
+
+                throw new UnauthorizedAccessException("reCAPTCHA verification failed. Please try again.");
+            }
+
+            _logger.LogDebug(
+                "reCAPTCHA verification successful - Username: {Username}, IP: {IpAddress}, Score: {Score}",
+                loginDto.Username, ipAddress, recaptchaResult.Score);
+        }
+        else if (_recaptchaService != null && string.IsNullOrWhiteSpace(loginDto.RecaptchaToken))
+        {
+            // Если reCAPTCHA настроен, но токен не передан, логируем предупреждение
+            _logger.LogWarning(
+                "reCAPTCHA is enabled but token is missing - Username: {Username}, IP: {IpAddress}",
+                loginDto.Username, ipAddress);
+        }
 
         // Проверяем, не заблокирован ли IP-адрес
         if (!string.IsNullOrWhiteSpace(ipAddress))
