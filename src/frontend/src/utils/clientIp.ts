@@ -27,8 +27,11 @@ export async function getClientIp(): Promise<string | null> {
     const ipServices = [
       'https://api.ipify.org?format=json',
       'https://ipapi.co/json/',
+      'http://ip-api.com/json/?fields=status,message,query',
       'https://api.myip.com',
     ];
+
+    const errors: Array<{ service: string; error: unknown }> = [];
 
     for (const serviceUrl of ipServices) {
       try {
@@ -37,10 +40,26 @@ export async function getClientIp(): Promise<string | null> {
           headers: {
             'Accept': 'application/json',
           },
+          // Таймаут для запроса (3 секунды)
+          signal: AbortSignal.timeout(3000),
         });
 
         if (response.ok) {
           const data = await response.json();
+          
+          // ip-api.com возвращает { status: "success", query: "..." } или { status: "fail", message: "..." }
+          if (serviceUrl.includes('ip-api.com')) {
+            if (data.status === 'success' && data.query) {
+              const ip = data.query;
+              if (isValidIp(ip)) {
+                cacheIp(ip);
+                return ip;
+              }
+            }
+            // Если status !== "success", пропускаем этот сервис
+            continue;
+          }
+          
           // Разные сервисы возвращают IP в разных полях
           const ip = data.ip || data.query || data.address;
           
@@ -51,15 +70,23 @@ export async function getClientIp(): Promise<string | null> {
           }
         }
       } catch (error) {
-        // Пробуем следующий сервис
-        console.warn(`Failed to get IP from ${serviceUrl}:`, error);
+        // Сохраняем ошибку для логирования только если все сервисы не сработают
+        errors.push({ service: serviceUrl, error });
         continue;
       }
     }
 
+    // Логируем только если все сервисы не сработали
+    if (errors.length > 0 && errors.length === ipServices.length) {
+      console.warn('Failed to get IP from all services. This is non-critical and the app will continue to work.');
+    }
+
     return null;
   } catch (error) {
-    console.error('Failed to get client IP:', error);
+    // Критическая ошибка - логируем только если это не ожидаемая ошибка сети
+    if (error instanceof Error && error.name !== 'AbortError' && error.name !== 'TypeError') {
+      console.error('Failed to get client IP:', error);
+    }
     return null;
   }
 }
