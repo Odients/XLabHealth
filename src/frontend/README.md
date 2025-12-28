@@ -39,12 +39,15 @@ npm run build
 
 ## Переменные окружения
 
-Создайте файл `.env` на основе `.env.example`:
+Создайте файл `.env` в корне проекта `src/frontend/`:
 
 ```env
 VITE_API_URL=http://localhost:5021
 VITE_FRONTEND_URL=https://localhost:7146
+VITE_GOOGLE_TAG_ID=GTM-XXXXXXX
 ```
+
+**Примечание**: `VITE_GOOGLE_TAG_ID` - опциональная переменная. Если не указана, Google Tag Manager не будет инициализирован.
 
 ## Структура проекта
 

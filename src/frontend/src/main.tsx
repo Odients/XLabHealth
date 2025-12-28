@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import App from './App';
 import { getClientIp } from './utils/clientIp';
+import { initGoogleTagManager } from './utils/gtm';
 import './i18n/config';
 import './styles/index.css';
 import 'react-toastify/dist/ReactToastify.css';
@@ -14,6 +15,9 @@ import 'react-toastify/dist/ReactToastify.css';
 getClientIp().catch((error) => {
   console.warn('Failed to preload client IP:', error);
 });
+
+// Инициализируем Google Tag Manager
+initGoogleTagManager();
 
 const queryClient = new QueryClient({
   defaultOptions: {

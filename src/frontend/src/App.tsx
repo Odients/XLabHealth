@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useAuthStore } from './store/authStore';
+import { useGTM } from './hooks/useGTM';
 import PublicLayout from './components/layout/PublicLayout';
 import AppLayout from './components/layout/AppLayout';
 import PublicDashboard from './pages/PublicDashboard';
@@ -15,6 +16,9 @@ import AdminRoute from './components/routing/AdminRoute';
 
 function App() {
   const { initialize, checkAuth, isAuthenticated } = useAuthStore();
+  
+  // Автоматически отслеживаем переходы по страницам в GTM
+  useGTM();
 
   useEffect(() => {
     // Восстанавливаем состояние авторизации из localStorage при загрузке приложения
