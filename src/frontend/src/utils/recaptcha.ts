@@ -13,7 +13,7 @@ export const initRecaptcha = (): Promise<void> => {
     }
 
     // Проверяем, не загружен ли уже скрипт
-    if (window.grecaptcha && window.grecaptcha.ready) {
+    if (window.grecaptcha) {
       console.log('reCAPTCHA is already initialized');
       resolve();
       return;
@@ -23,7 +23,7 @@ export const initRecaptcha = (): Promise<void> => {
     if (document.querySelector(`script[src*="recaptcha"]`)) {
       // Скрипт уже загружается, ждем его готовности
       const checkInterval = setInterval(() => {
-        if (window.grecaptcha && window.grecaptcha.ready) {
+        if (window.grecaptcha) {
           clearInterval(checkInterval);
           resolve();
         }
@@ -47,7 +47,7 @@ export const initRecaptcha = (): Promise<void> => {
     script.async = true;
     script.defer = true;
     script.onload = () => {
-      if (window.grecaptcha && window.grecaptcha.ready) {
+      if (window.grecaptcha) {
         window.grecaptcha.ready(() => {
           console.log('reCAPTCHA v3 initialized successfully');
           resolve();
@@ -75,7 +75,7 @@ export const getRecaptchaToken = async (action: string = 'submit'): Promise<stri
 
   try {
     // Убеждаемся, что reCAPTCHA инициализирован
-    if (!window.grecaptcha || !window.grecaptcha.ready) {
+    if (!window.grecaptcha) {
       await initRecaptcha();
     }
 
