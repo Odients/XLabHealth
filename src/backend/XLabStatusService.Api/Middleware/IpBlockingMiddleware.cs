@@ -20,6 +20,14 @@ public class IpBlockingMiddleware
 
     public async Task InvokeAsync(HttpContext context, IBlockedIpRepository blockedIpRepository)
     {
+        // Пропускаем проверку для ip-status — фронтенд должен получить информацию о блокировке
+        var path = context.Request.Path.Value ?? string.Empty;
+        if (path.StartsWith("/api/public/ip-status", StringComparison.OrdinalIgnoreCase))
+        {
+            await _next(context);
+            return;
+        }
+
         // Получаем IP-адрес клиента
         var ipAddress = GetClientIpAddress(context);
 

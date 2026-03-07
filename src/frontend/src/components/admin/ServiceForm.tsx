@@ -111,6 +111,7 @@ const ServiceForm = ({ service, onSubmit, onCancel, isLoading }: ServiceFormProp
     retryCount: 2,
     isEnabled: true,
     isPublic: false,
+    isCritical: false,
   });
 
   const [httpConfig, setHttpConfig] = useState<HttpConfig>({
@@ -159,6 +160,7 @@ const ServiceForm = ({ service, onSubmit, onCancel, isLoading }: ServiceFormProp
         retryCount: service.retryCount,
         isEnabled: service.isEnabled,
         isPublic: service.isPublic,
+        isCritical: service.isCritical ?? false,
       });
 
       // Load configuration from service if available
@@ -319,6 +321,7 @@ const ServiceForm = ({ service, onSubmit, onCancel, isLoading }: ServiceFormProp
         retryCount: 2,
         isEnabled: true,
         isPublic: false,
+        isCritical: false,
       });
       setHttpConfig({
         expectedStatusCode: 200,
@@ -863,6 +866,17 @@ const ServiceForm = ({ service, onSubmit, onCancel, isLoading }: ServiceFormProp
               onChange={(e) => setFormData({ ...formData, isPublic: e.target.checked })}
             />
             Публичный (отображается в публичном API)
+          </label>
+        </div>
+
+        <div className="form-group">
+          <label>
+            <input
+              type="checkbox"
+              checked={formData.isCritical}
+              onChange={(e) => setFormData({ ...formData, isCritical: e.target.checked })}
+            />
+            Критичный (при сбое — вся система не работает)
           </label>
         </div>
       </div>

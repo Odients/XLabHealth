@@ -1037,8 +1037,11 @@ public class AnalyticsService
             {
                 try
                 {
-                    var metadata = JsonSerializer.Deserialize<JsonElement>(result.Metadata);
-                    if (!metadata.TryGetProperty("databaseSize", out var dbSize))
+                    if (string.IsNullOrEmpty(result.Metadata))
+                        continue;
+
+                    var metadata = JsonSerializer.Deserialize<JsonElement>(result.Metadata!);
+                    if (!metadata.TryGetProperty("databaseSize", out var dbSize) || dbSize.ValueKind == JsonValueKind.Null)
                     {
                         continue;
                     }
@@ -1050,22 +1053,22 @@ public class AnalyticsService
                         ServiceName = service.Name
                     };
 
-                    // Используем правильные имена полей из DatabaseHealthCheckProvider (PascalCase)
+                    // Используем правильные имена полей из DatabaseHealthCheckProvider (PascalCase по умолчанию)
                     if (dbSize.TryGetProperty("TotalSizeMB", out var totalSize))
                         point.TotalSizeMB = totalSize.GetDouble();
                     else if (dbSize.TryGetProperty("totalSizeMB", out var totalSizeLower))
                         point.TotalSizeMB = totalSizeLower.GetDouble();
-                    
+
                     if (dbSize.TryGetProperty("DataSizeMB", out var dataSize))
                         point.DataSizeMB = dataSize.GetDouble();
                     else if (dbSize.TryGetProperty("dataSizeMB", out var dataSizeLower))
                         point.DataSizeMB = dataSizeLower.GetDouble();
-                    
+
                     if (dbSize.TryGetProperty("LogSizeMB", out var logSize))
                         point.LogSizeMB = logSize.GetDouble();
                     else if (dbSize.TryGetProperty("logSizeMB", out var logSizeLower))
                         point.LogSizeMB = logSizeLower.GetDouble();
-                    
+
                     // DatabaseHealthCheckProvider использует TotalUsedMB и TotalFreeMB
                     if (dbSize.TryGetProperty("TotalUsedMB", out var usedSpace))
                         point.UsedSpaceMB = usedSpace.GetDouble();
@@ -1073,13 +1076,21 @@ public class AnalyticsService
                         point.UsedSpaceMB = usedSpaceLower.GetDouble();
                     else if (dbSize.TryGetProperty("usedSpaceMB", out var usedSpaceAlt))
                         point.UsedSpaceMB = usedSpaceAlt.GetDouble();
-                    
+
                     if (dbSize.TryGetProperty("TotalFreeMB", out var freeSpace))
                         point.FreeSpaceMB = freeSpace.GetDouble();
                     else if (dbSize.TryGetProperty("totalFreeMB", out var freeSpaceLower))
                         point.FreeSpaceMB = freeSpaceLower.GetDouble();
                     else if (dbSize.TryGetProperty("freeSpaceMB", out var freeSpaceAlt))
                         point.FreeSpaceMB = freeSpaceAlt.GetDouble();
+
+                    // Пропускаем точки с некорректными данными (размер должен быть > 0)
+                    if (point.TotalSizeMB <= 0 || point.UsedSpaceMB < 0)
+                    {
+                        _logger.LogDebug("Skipping invalid DB size point for service {ServiceId} at {CheckedAt}: TotalSizeMB={Total}, UsedSpaceMB={Used}",
+                            service.Id, result.CheckedAt, point.TotalSizeMB, point.UsedSpaceMB);
+                        continue;
+                    }
 
                     point.UsagePercentage = point.TotalSizeMB > 0
                         ? (point.UsedSpaceMB / point.TotalSizeMB) * 100
@@ -1121,9 +1132,10 @@ public class AnalyticsService
             var serviceName = servicePoints.First().ServiceName;
             var serviceId = servicePoints.First().ServiceId;
 
-            // Используем последние 30 точек для расчета тренда (или все, если меньше)
+            // Используем последние 90*1440 точек для расчёта тренда (90 дней при 1 точке/мин, или все, если меньше)
+            const int maxPointsForTrend = 90 * 1440;
             var pointsForTrend = servicePoints
-                .TakeLast(Math.Min(30, servicePoints.Count))
+                .TakeLast(Math.Min(maxPointsForTrend, servicePoints.Count))
                 .ToList();
 
             if (pointsForTrend.Count < 2)
@@ -1147,17 +1159,16 @@ public class AnalyticsService
             var lastPoint = servicePoints.Last();
             var lastDate = lastPoint.Timestamp;
 
-            // Прогноз на следующие 30, 60, 90 дней
-            var forecastDays = new[] { 30, 60, 90 };
-            var baseDays = (lastDate - pointsForTrend.First().Timestamp).TotalDays;
+            // Прогноз на 7, 14, 30, 60, 90 дней — больше точек для плавной линии тренда
+            var forecastDays = new[] { 7, 14, 30, 60, 90 };
 
             foreach (var daysAhead in forecastDays)
             {
                 var forecastDate = lastDate.AddDays(daysAhead);
-                var daysFromBase = baseDays + daysAhead;
 
-                var forecastedTotal = intercept + slope * daysFromBase;
-                var forecastedUsed = interceptUsed + slopeUsed * daysFromBase;
+                // Прогноз = последнее значение + скорость роста * дней вперёд
+                var forecastedTotal = lastPoint.TotalSizeMB + slope * daysAhead;
+                var forecastedUsed = lastPoint.UsedSpaceMB + slopeUsed * daysAhead;
 
                 // Не позволяем прогнозу быть меньше текущего значения
                 if (forecastedTotal < lastPoint.TotalSizeMB)
@@ -1219,7 +1230,14 @@ public class AnalyticsService
         var sumXY = xValues.Zip(yValues, (x, y) => x * y).Sum();
         var sumX2 = xValues.Sum(x => x * x);
 
-        var slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+        var denominator = n * sumX2 - sumX * sumX;
+        if (Math.Abs(denominator) < 1e-10)
+        {
+            // Все x одинаковы — нет вариации, возвращаем горизонтальную линию на уровне среднего
+            return (0, sumY / n);
+        }
+
+        var slope = (n * sumXY - sumX * sumY) / denominator;
         var intercept = (sumY - slope * sumX) / n;
 
         return (slope, intercept);

@@ -16,6 +16,7 @@ public class ServiceUpdateDto
     public int? RetryCount { get; set; }
     public bool? IsEnabled { get; set; }
     public bool? IsPublic { get; set; }
+    public bool? IsCritical { get; set; }
     public ServiceConfigurationDto? Configuration { get; set; }
 }
 

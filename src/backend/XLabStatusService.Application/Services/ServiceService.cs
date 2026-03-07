@@ -138,6 +138,10 @@ public class ServiceService
         {
             service.IsPublic = dto.IsPublic.Value;
         }
+        if (dto.IsCritical.HasValue)
+        {
+            service.IsCritical = dto.IsCritical.Value;
+        }
 
         // Обновляем конфигурацию (частичное обновление)
         if (dto.Configuration != null)

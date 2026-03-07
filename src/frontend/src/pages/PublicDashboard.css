@@ -44,6 +44,62 @@
   opacity: 0.9;
 }
 
+/* Экран блокировки IP */
+.ip-blocked-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.ip-blocked-screen-content {
+  max-width: 480px;
+  text-align: center;
+  padding: var(--spacing-2xl);
+  background-color: var(--color-bg-primary);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+}
+
+.ip-blocked-screen-icon {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: var(--spacing-lg);
+  line-height: 1;
+}
+
+.ip-blocked-screen-title {
+  margin: 0 0 var(--spacing-md);
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.ip-blocked-screen-description {
+  margin: 0 0 var(--spacing-lg);
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.ip-blocked-screen-details {
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--color-border);
+  font-size: 0.9375rem;
+  color: var(--color-text-secondary);
+}
+
+.ip-blocked-screen-details p {
+  margin: 0 0 var(--spacing-xs);
+}
+
+.ip-blocked-screen-date {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  opacity: 0.9;
+}
+
 .dashboard-header {
   text-align: center;
   margin-bottom: var(--spacing-xl);

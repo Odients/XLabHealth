@@ -17,7 +17,9 @@
         "warning": "Uwaga",
         "message": "Twój adres IP ({ip}) znajduje się na liście zablokowanych.",
         "blockedDate": "Data blokady: {date}",
-        "unknown": "nieznany"
+        "unknown": "nieznany",
+        "screenTitle": "Dostęp zabroniony",
+        "screenDescription": "Twój adres IP został zablokowany. Skontaktuj się z administratorem w celu uzyskania dostępu."
       }
     },
     "login": {
@@ -60,7 +62,8 @@
       "interval": "Interwał",
       "enabled": "Włączony",
       "disabled": "Wyłączony",
-      "url": "URL"
+      "url": "URL",
+      "critical": "Krytyczna usługa"
     }
   }
 }

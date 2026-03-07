@@ -17,7 +17,9 @@
         "warning": "Warning",
         "message": "Your IP address ({ip}) is in the blocked list.",
         "blockedDate": "Block date: {date}",
-        "unknown": "unknown"
+        "unknown": "unknown",
+        "screenTitle": "Access Denied",
+        "screenDescription": "Your IP address has been blocked. Contact the administrator to request access."
       }
     },
     "login": {
@@ -60,7 +62,8 @@
       "interval": "Interval",
       "enabled": "Enabled",
       "disabled": "Disabled",
-      "url": "URL"
+      "url": "URL",
+      "critical": "Critical service"
     }
   }
 }

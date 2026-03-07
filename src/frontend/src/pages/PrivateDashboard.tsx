@@ -13,6 +13,7 @@ import './PrivateDashboard.css';
 const PrivateDashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<HealthStatus | 'all'>('all');
+  const [criticalFilter, setCriticalFilter] = useState<'all' | 'critical' | 'non-critical'>('all');
 
   const { data: services, isLoading, error, refetch } = useQuery({
     queryKey: ['services'],
@@ -61,50 +62,73 @@ const PrivateDashboard = () => {
       }
     });
 
+    const criticalCount = services.filter((s) => s.isCritical ?? false).length;
+
     return {
       total: services.length,
       healthy,
       degraded,
       unhealthy,
       unknown,
+      criticalCount,
     };
   }, [services]);
 
-  // Вычисляем общий статус системы
+  // Вычисляем общий статус системы с учётом критичности
+  // Логика: если хотя бы один критический сервис не работает — вся система не работает
+  // Если не работают только некритичные — система ограниченно функционирует
   const systemStatus = useMemo(() => {
     if (!services || services.length === 0) {
       return HealthStatus.Unknown;
     }
 
-    // Если есть неработающие сервисы - система не работает
-    if (stats.unhealthy > 0) {
-      return HealthStatus.Unhealthy;
-    }
-    // Если есть деградированные сервисы - система деградирована
-    if (stats.degraded > 0) {
-      return HealthStatus.Degraded;
-    }
-    // Если все сервисы работают - система работает
-    if (stats.healthy > 0 && stats.unhealthy === 0 && stats.degraded === 0) {
-      return HealthStatus.Healthy;
-    }
-    // Иначе неизвестно
-    return HealthStatus.Unknown;
-  }, [stats, services]);
+    let hasUnhealthyCritical = false;
+    let hasDegradedCritical = false;
+    let hasUnhealthyOrDegradedNonCritical = false;
+
+    services.forEach((service) => {
+      const status = parseHealthStatus(service.lastStatus);
+      const isCritical = service.isCritical ?? false;
+
+      switch (status) {
+        case HealthStatus.Unhealthy:
+        case HealthStatus.Unknown:
+          if (isCritical) hasUnhealthyCritical = true;
+          else hasUnhealthyOrDegradedNonCritical = true;
+          break;
+        case HealthStatus.Degraded:
+          if (isCritical) hasDegradedCritical = true;
+          else hasUnhealthyOrDegradedNonCritical = true;
+          break;
+        default:
+          break;
+      }
+    });
+
+    if (hasUnhealthyCritical) return HealthStatus.Unhealthy;
+    if (hasDegradedCritical) return HealthStatus.Degraded;
+    if (hasUnhealthyOrDegradedNonCritical) return HealthStatus.Degraded;
+    return HealthStatus.Healthy;
+  }, [services]);
 
   const filteredServices = services?.filter((service) => {
     const matchesSearch =
       service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       service.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
+    const isCritical = service.isCritical ?? false;
+    const matchesCritical =
+      criticalFilter === 'all' ||
+      (criticalFilter === 'critical' && isCritical) ||
+      (criticalFilter === 'non-critical' && !isCritical);
+
     if (statusFilter === 'all') {
-      return matchesSearch;
+      return matchesSearch && matchesCritical;
     }
-    
-    // Правильный парсинг статуса для фильтрации
+
     const serviceStatus = parseHealthStatus(service.lastStatus);
     const matchesStatus = serviceStatus === statusFilter;
-    return matchesSearch && matchesStatus;
+    return matchesSearch && matchesStatus && matchesCritical;
   });
 
   // Проверяем, недоступен ли бэкенд
@@ -164,6 +188,10 @@ const PrivateDashboard = () => {
           <div className="stat-value">{stats.unknown}</div>
           <div className="stat-label">Неизвестно</div>
         </div>
+        <div className="stat-card critical">
+          <div className="stat-value">{stats.criticalCount}</div>
+          <div className="stat-label">Критичных</div>
+        </div>
       </div>
 
       <div className="filters-section">
@@ -175,6 +203,26 @@ const PrivateDashboard = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"
           />
+        </div>
+        <div className="critical-filters">
+          <button
+            className={`filter-btn ${criticalFilter === 'all' ? 'active' : ''}`}
+            onClick={() => setCriticalFilter('all')}
+          >
+            Все
+          </button>
+          <button
+            className={`filter-btn ${criticalFilter === 'critical' ? 'active' : ''}`}
+            onClick={() => setCriticalFilter('critical')}
+          >
+            ⚠ Критичные
+          </button>
+          <button
+            className={`filter-btn ${criticalFilter === 'non-critical' ? 'active' : ''}`}
+            onClick={() => setCriticalFilter('non-critical')}
+          >
+            Некритичные
+          </button>
         </div>
         <div className="status-filters">
           <button

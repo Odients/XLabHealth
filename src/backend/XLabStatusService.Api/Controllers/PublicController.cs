@@ -32,54 +32,76 @@ public class PublicController : ControllerBase
     }
 
     /// <summary>
-    /// Получить общий статус системы
+    /// Получить общий статус системы.
+    /// Логика: если хотя бы один критический сервис не работает — вся система не работает (Unhealthy).
+    /// Если не работают только некритичные сервисы — система ограниченно функционирует (Degraded).
     /// </summary>
     [HttpGet("status")]
     public async Task<ActionResult<PublicStatusDto>> GetStatus(CancellationToken cancellationToken)
     {
         var publicServices = await _serviceRepository.GetPublicServicesAsync(cancellationToken);
-        var serviceIds = publicServices.Select(s => s.Id).ToList();
+        var servicesList = publicServices.ToList();
 
         var healthyCount = 0;
         var degradedCount = 0;
         var unhealthyCount = 0;
         DateTime? lastUpdated = null;
 
-        foreach (var serviceId in serviceIds)
-        {
-            var latestResult = await _resultRepository.GetLatestByServiceIdAsync(serviceId, cancellationToken);
-            if (latestResult != null)
-            {
-                if (latestResult.CheckedAt > (lastUpdated ?? DateTime.MinValue))
-                {
-                    lastUpdated = latestResult.CheckedAt;
-                }
+        var hasUnhealthyCritical = false;
+        var hasDegradedCritical = false;
+        var hasUnhealthyOrDegradedNonCritical = false;
 
-                switch (latestResult.Status)
-                {
-                    case HealthStatus.Healthy:
-                        healthyCount++;
-                        break;
-                    case HealthStatus.Degraded:
-                        degradedCount++;
-                        break;
-                    case HealthStatus.Unhealthy:
-                        unhealthyCount++;
-                        break;
-                }
+        foreach (var service in servicesList)
+        {
+            var latestResult = await _resultRepository.GetLatestByServiceIdAsync(service.Id, cancellationToken);
+            var status = latestResult?.Status ?? HealthStatus.Unknown;
+
+            if (latestResult != null && latestResult.CheckedAt > (lastUpdated ?? DateTime.MinValue))
+            {
+                lastUpdated = latestResult.CheckedAt;
+            }
+
+            switch (status)
+            {
+                case HealthStatus.Healthy:
+                    healthyCount++;
+                    break;
+                case HealthStatus.Degraded:
+                    degradedCount++;
+                    if (service.IsCritical)
+                        hasDegradedCritical = true;
+                    else
+                        hasUnhealthyOrDegradedNonCritical = true;
+                    break;
+                case HealthStatus.Unhealthy:
+                    unhealthyCount++;
+                    if (service.IsCritical)
+                        hasUnhealthyCritical = true;
+                    else
+                        hasUnhealthyOrDegradedNonCritical = true;
+                    break;
+                case HealthStatus.Unknown:
+                    if (service.IsCritical)
+                        hasUnhealthyCritical = true; // Unknown для критического = система не работает
+                    else
+                        hasUnhealthyOrDegradedNonCritical = true;
+                    break;
             }
         }
 
-        var totalServices = serviceIds.Count;
-        var availabilityPercentage = totalServices > 0 
-            ? (double)(healthyCount + degradedCount * 0.5) / totalServices * 100 
+        var totalServices = servicesList.Count;
+        var availabilityPercentage = totalServices > 0
+            ? (double)(healthyCount + degradedCount * 0.5) / totalServices * 100
             : 100;
 
-        var overallStatus = unhealthyCount > 0 
-            ? HealthStatus.Unhealthy 
-            : degradedCount > 0 
-                ? HealthStatus.Degraded 
-                : HealthStatus.Healthy;
+        // Новая логика с учётом критичности
+        var overallStatus = hasUnhealthyCritical
+            ? HealthStatus.Unhealthy  // Критический сервис не работает — вся система не работает
+            : hasDegradedCritical
+                ? HealthStatus.Degraded  // Критический сервис деградирован — ограниченная работа
+                : hasUnhealthyOrDegradedNonCritical
+                    ? HealthStatus.Degraded  // Только некритичные не работают — ограниченное функционирование
+                    : HealthStatus.Healthy;
 
         return Ok(new PublicStatusDto
         {
@@ -110,6 +132,7 @@ public class PublicController : ControllerBase
                 Id = service.Id,
                 Name = service.Name,
                 Status = latestResult?.Status ?? HealthStatus.Unknown,
+                IsCritical = service.IsCritical,
                 LastCheckedAt = latestResult?.CheckedAt
             });
         }
@@ -135,6 +158,7 @@ public class PublicController : ControllerBase
             Id = service.Id,
             Name = service.Name,
             Status = latestResult?.Status ?? HealthStatus.Unknown,
+            IsCritical = service.IsCritical,
             LastCheckedAt = latestResult?.CheckedAt
         });
     }

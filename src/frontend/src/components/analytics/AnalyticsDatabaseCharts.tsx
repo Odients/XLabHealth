@@ -30,6 +30,7 @@ const AnalyticsDatabaseCharts = ({ analytics, period }: AnalyticsDatabaseChartsP
   };
 
   const formatSize = (mb: number): string => {
+    if (mb == null || Number.isNaN(mb)) return '-';
     if (mb < 1024) {
       return `${mb.toFixed(2)} МБ`;
     } else if (mb < 1024 * 1024) {
@@ -37,6 +38,11 @@ const AnalyticsDatabaseCharts = ({ analytics, period }: AnalyticsDatabaseChartsP
     } else {
       return `${(mb / (1024 * 1024)).toFixed(2)} ТБ`;
     }
+  };
+
+  const safeFormatSize = (value: number | null | undefined): string => {
+    if (value == null || value === undefined || Number.isNaN(value)) return '-';
+    return formatSize(value);
   };
 
   // Группируем данные по сервисам
@@ -69,26 +75,46 @@ const AnalyticsDatabaseCharts = ({ analytics, period }: AnalyticsDatabaseChartsP
         const serviceName = points[0]?.serviceName || serviceId;
         const forecastPoints = forecastMap.get(serviceId) || [];
         
-        // Объединяем исторические данные и прогноз для графика
-        const combinedData = [
-          ...points.map(p => ({
+        // Исторические точки: факт в totalSizeMB/usedSpaceMB; для последней точки — заполняем прогнозные поля для плавного соединения линий
+        const historicalPoints = points.map((p, idx) => {
+          const isLast = idx === points.length - 1;
+          const hasForecast = forecastPoints.length > 0;
+          const ts = new Date(p.timestamp).getTime();
+          return {
             ...p,
+            timestampMs: ts,
             isForecast: false,
-            forecastedTotalSizeMB: null as number | null,
-            forecastedUsedSpaceMB: null as number | null,
-          })),
-          ...forecastPoints.map(p => ({
+            forecastedTotalSizeMB: (isLast && hasForecast ? p.totalSizeMB : null) as number | null,
+            forecastedUsedSpaceMB: (isLast && hasForecast ? p.usedSpaceMB : null) as number | null,
+            forecastedUsagePercentage: (isLast && hasForecast ? p.usagePercentage : null) as number | null,
+          };
+        });
+
+        // Точки прогноза: только прогнозные поля, фактические = null (линии факта не продлеваются в будущее)
+        const forecastDataPoints = forecastPoints.map(p => {
+          const ts = new Date(p.timestamp).getTime();
+          return {
             timestamp: p.timestamp,
+            timestampMs: ts,
             serviceId: p.serviceId,
             serviceName: p.serviceName,
-            totalSizeMB: p.forecastedTotalSizeMB,
-            usedSpaceMB: p.forecastedUsedSpaceMB,
-            usagePercentage: p.forecastedUsagePercentage,
+            totalSizeMB: null as number | null,
+            dataSizeMB: null as number | null,
+            logSizeMB: null as number | null,
+            usedSpaceMB: null as number | null,
+            freeSpaceMB: null as number | null,
+            usagePercentage: null as number | null,
             isForecast: true,
             forecastedTotalSizeMB: p.forecastedTotalSizeMB,
             forecastedUsedSpaceMB: p.forecastedUsedSpaceMB,
-          })),
-        ].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+            forecastedUsagePercentage: p.forecastedUsagePercentage,
+          };
+        });
+
+        const combinedData = [
+          ...historicalPoints,
+          ...forecastDataPoints,
+        ].sort((a, b) => (a.timestampMs ?? 0) - (b.timestampMs ?? 0));
         
         return (
           <div key={serviceId} className="database-chart-section">
@@ -129,23 +155,27 @@ const AnalyticsDatabaseCharts = ({ analytics, period }: AnalyticsDatabaseChartsP
                   <LineChart data={combinedData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis 
-                      dataKey="timestamp" 
-                      tickFormatter={formatDate}
+                      dataKey="timestampMs" 
+                      type="number"
+                      domain={['dataMin', 'dataMax']}
+                      tickFormatter={(ms) => formatDate(new Date(ms).toISOString())}
                       angle={-45}
                       textAnchor="end"
                       height={80}
                     />
                     <YAxis 
-                      tickFormatter={(value) => formatSize(value)}
+                      tickFormatter={(value) => safeFormatSize(value)}
                     />
                     <Tooltip 
                       labelFormatter={(value) => {
+                        if (typeof value === 'number') return formatDate(new Date(value).toISOString());
                         if (typeof value === 'string') return formatDate(value);
                         return formatDate(new Date(value).toISOString());
                       }}
-                      formatter={(value: number, name: string) => {
-                        if (!value || value === 0) return ['-', name];
-                        return [formatSize(value), name];
+                      formatter={(value: unknown, name: string) => {
+                        const num = typeof value === 'number' ? value : undefined;
+                        if (num == null || num === undefined || Number.isNaN(num)) return ['-', name];
+                        return [formatSize(num), name];
                       }}
                     />
                     <Legend />
@@ -188,7 +218,7 @@ const AnalyticsDatabaseCharts = ({ analytics, period }: AnalyticsDatabaseChartsP
                           strokeDasharray="5 5"
                           name="Прогноз общего размера"
                           dot={false}
-                          connectNulls={false}
+                          connectNulls={true}
                         />
                         <Line 
                           type="monotone" 
@@ -198,7 +228,7 @@ const AnalyticsDatabaseCharts = ({ analytics, period }: AnalyticsDatabaseChartsP
                           strokeDasharray="5 5"
                           name="Прогноз используемого пространства"
                           dot={false}
-                          connectNulls={false}
+                          connectNulls={true}
                         />
                       </>
                     )}
@@ -210,24 +240,27 @@ const AnalyticsDatabaseCharts = ({ analytics, period }: AnalyticsDatabaseChartsP
               <div className="chart-container">
                 <h4>Использование пространства</h4>
                 <ResponsiveContainer width="100%" height={250}>
-                  <AreaChart data={points}>
+                  <AreaChart data={points.map(p => ({ ...p, timestampMs: new Date(p.timestamp).getTime() }))}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis 
-                      dataKey="timestamp" 
-                      tickFormatter={formatDate}
+                      dataKey="timestampMs" 
+                      type="number"
+                      domain={['dataMin', 'dataMax']}
+                      tickFormatter={(ms) => formatDate(new Date(ms).toISOString())}
                       angle={-45}
                       textAnchor="end"
                       height={80}
                     />
                     <YAxis 
-                      tickFormatter={(value) => formatSize(value)}
+                      tickFormatter={(value) => safeFormatSize(value)}
                     />
                     <Tooltip 
                       labelFormatter={(value) => {
+                        if (typeof value === 'number') return formatDate(new Date(value).toISOString());
                         if (typeof value === 'string') return formatDate(value);
                         return formatDate(new Date(value).toISOString());
                       }}
-                      formatter={(value: number) => formatSize(value)}
+                      formatter={(value: unknown) => safeFormatSize(typeof value === 'number' ? value : undefined)}
                     />
                     <Legend />
                     <Area 
@@ -257,8 +290,10 @@ const AnalyticsDatabaseCharts = ({ analytics, period }: AnalyticsDatabaseChartsP
                   <ComposedChart data={combinedData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis 
-                      dataKey="timestamp" 
-                      tickFormatter={formatDate}
+                      dataKey="timestampMs" 
+                      type="number"
+                      domain={['dataMin', 'dataMax']}
+                      tickFormatter={(ms) => formatDate(new Date(ms).toISOString())}
                       angle={-45}
                       textAnchor="end"
                       height={80}
@@ -266,12 +301,14 @@ const AnalyticsDatabaseCharts = ({ analytics, period }: AnalyticsDatabaseChartsP
                     <YAxis domain={[0, 100]} />
                     <Tooltip 
                       labelFormatter={(value) => {
+                        if (typeof value === 'number') return formatDate(new Date(value).toISOString());
                         if (typeof value === 'string') return formatDate(value);
                         return formatDate(new Date(value).toISOString());
                       }}
-                      formatter={(value: number, name: string) => {
-                        if (!value || value === 0) return ['-', name];
-                        return [`${value.toFixed(2)}%`, name];
+                      formatter={(value: unknown, name: string) => {
+                        const num = typeof value === 'number' ? value : undefined;
+                        if (num == null || num === undefined || Number.isNaN(num)) return ['-', name];
+                        return [`${num.toFixed(2)}%`, name];
                       }}
                     />
                     <Legend />
@@ -293,7 +330,7 @@ const AnalyticsDatabaseCharts = ({ analytics, period }: AnalyticsDatabaseChartsP
                         strokeDasharray="5 5"
                         name="Прогноз использования (%)"
                         dot={false}
-                        connectNulls={false}
+                        connectNulls={true}
                       />
                     )}
                   </ComposedChart>
@@ -308,23 +345,27 @@ const AnalyticsDatabaseCharts = ({ analytics, period }: AnalyticsDatabaseChartsP
                     <LineChart data={combinedData}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis 
-                        dataKey="timestamp" 
-                        tickFormatter={formatDate}
+                        dataKey="timestampMs" 
+                        type="number"
+                        domain={['dataMin', 'dataMax']}
+                        tickFormatter={(ms) => formatDate(new Date(ms).toISOString())}
                         angle={-45}
                         textAnchor="end"
                         height={80}
                       />
                       <YAxis 
-                        tickFormatter={(value) => formatSize(value)}
+                        tickFormatter={(value) => safeFormatSize(value)}
                       />
                       <Tooltip 
                         labelFormatter={(value) => {
+                          if (typeof value === 'number') return formatDate(new Date(value).toISOString());
                           if (typeof value === 'string') return formatDate(value);
                           return formatDate(new Date(value).toISOString());
                         }}
-                        formatter={(value: number, name: string) => {
-                          if (!value || value === 0) return ['-', name];
-                          return [formatSize(value), name];
+                        formatter={(value: unknown, name: string) => {
+                          const num = typeof value === 'number' ? value : undefined;
+                          if (num == null || num === undefined || Number.isNaN(num)) return ['-', name];
+                          return [formatSize(num), name];
                         }}
                       />
                       <Legend />
@@ -346,7 +387,7 @@ const AnalyticsDatabaseCharts = ({ analytics, period }: AnalyticsDatabaseChartsP
                         strokeDasharray="5 5"
                         name="Прогноз общего размера"
                         dot={{ fill: '#8b5cf6', r: 4 }}
-                        connectNulls={false}
+                        connectNulls={true}
                       />
                       <Line 
                         type="monotone" 
@@ -365,7 +406,7 @@ const AnalyticsDatabaseCharts = ({ analytics, period }: AnalyticsDatabaseChartsP
                         strokeDasharray="5 5"
                         name="Прогноз используемого пространства"
                         dot={{ fill: '#f87171', r: 4 }}
-                        connectNulls={false}
+                        connectNulls={true}
                       />
                     </LineChart>
                   </ResponsiveContainer>

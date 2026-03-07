@@ -45,6 +45,7 @@ const ServiceCard = ({ service, clickable = true }: ServiceCardProps) => {
   // Проверяем, является ли сервис полным (ServiceDto) или публичным (PublicServiceDto)
   // ServiceDto имеет поле 'type' и 'checkInterval', а PublicServiceDto - нет
   const isFullService = 'checkInterval' in service || 'type' in service;
+  const isCritical = (service as PublicServiceDto | ServiceDto).isCritical ?? false;
   
   // Получаем тип сервиса, если он доступен (только для ServiceDto)
   let serviceType: ServiceType | null = null;
@@ -70,6 +71,11 @@ const ServiceCard = ({ service, clickable = true }: ServiceCardProps) => {
               </span>
             )}
             <h3 className="service-card-title">{service.name}</h3>
+            {isCritical && (
+              <span className="service-card-badge critical" title={t('public.serviceCard.critical')}>
+                ⚠
+              </span>
+            )}
           </div>
           <StatusIndicator status={status} size="sm" showLabel />
         </div>

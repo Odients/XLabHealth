@@ -10,6 +10,7 @@ public class PublicServiceDto
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public HealthStatus Status { get; set; }
+    public bool IsCritical { get; set; }
     public DateTime? LastCheckedAt { get; set; }
 }
 

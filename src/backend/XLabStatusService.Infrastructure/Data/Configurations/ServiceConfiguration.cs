@@ -45,6 +45,10 @@ public class ServiceConfiguration : IEntityTypeConfiguration<Core.Entities.Servi
             .IsRequired()
             .HasDefaultValue(false);
 
+        builder.Property(s => s.IsCritical)
+            .IsRequired()
+            .HasDefaultValue(false);
+
         builder.Property(s => s.CreatedAt)
             .IsRequired();
 
@@ -65,6 +69,7 @@ public class ServiceConfiguration : IEntityTypeConfiguration<Core.Entities.Servi
         // Indexes
         builder.HasIndex(s => s.IsEnabled);
         builder.HasIndex(s => s.IsPublic);
+        builder.HasIndex(s => s.IsCritical);
         builder.HasIndex(s => s.Type);
     }
 }

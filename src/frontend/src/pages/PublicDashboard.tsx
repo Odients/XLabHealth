@@ -47,7 +47,7 @@ const PublicDashboard = () => {
     refetchInterval: 10000, // Обновление каждые 10 секунд
   });
 
-  const { data: ipStatus } = useQuery({
+  const { data: ipStatus, isLoading: ipStatusLoading } = useQuery({
     queryKey: ['ip-status', clientIp],
     queryFn: () => {
       if (!clientIp) {
@@ -64,6 +64,46 @@ const PublicDashboard = () => {
   const backendUnavailable = 
     (statusError && isBackendUnavailable(statusError)) ||
     (servicesError && isBackendUnavailable(servicesError));
+
+  // Ждём результат проверки IP, когда IP определён
+  if (clientIp && ipStatusLoading) {
+    return (
+      <div className="public-dashboard">
+        <div className="container">
+          <div className="loading">{t('public.dashboard.loading')}</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Показываем экран блокировки IP вместо пустого дашборда
+  if (ipStatus?.isBlocked) {
+    return (
+      <div className="public-dashboard ip-blocked-screen">
+        <div className="container">
+          <div className="ip-blocked-screen-content">
+            <span className="ip-blocked-screen-icon" aria-hidden>🚫</span>
+            <h1 className="ip-blocked-screen-title">{t('public.dashboard.ipBlocked.screenTitle')}</h1>
+            <p className="ip-blocked-screen-description">{t('public.dashboard.ipBlocked.screenDescription')}</p>
+            <div className="ip-blocked-screen-details">
+              <p>
+                {t('public.dashboard.ipBlocked.message', { 
+                  ip: ipStatus.ipAddress || t('public.dashboard.ipBlocked.unknown')
+                })}
+              </p>
+              {ipStatus.blockedDate && (
+                <p className="ip-blocked-screen-date">
+                  {t('public.dashboard.ipBlocked.blockedDate', { 
+                    date: formatDateTimeLocalized(ipStatus.blockedDate)
+                  })}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (statusLoading || servicesLoading) {
     return (
@@ -97,27 +137,6 @@ const PublicDashboard = () => {
   return (
     <div className="public-dashboard">
       <div className="container">
-        {ipStatus?.isBlocked && (
-          <div className="ip-blocked-warning">
-            <div className="ip-blocked-warning-content">
-              <span className="ip-blocked-icon">⚠️</span>
-              <div className="ip-blocked-text">
-                <strong>{t('public.dashboard.ipBlocked.warning')}:</strong>{' '}
-                {t('public.dashboard.ipBlocked.message', { 
-                  ip: ipStatus.ipAddress || t('public.dashboard.ipBlocked.unknown')
-                })}
-                {ipStatus.blockedDate && (
-                  <span className="ip-blocked-date">
-                    {' '}{t('public.dashboard.ipBlocked.blockedDate', { 
-                      date: formatDateTimeLocalized(ipStatus.blockedDate)
-                    })}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-        
         <div className="dashboard-header">
           <div className="dashboard-header-content">
             <h1>{t('public.dashboard.title')}</h1>

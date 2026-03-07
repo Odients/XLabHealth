@@ -15,6 +15,7 @@ public class Service
     public int RetryCount { get; set; }
     public bool IsEnabled { get; set; }
     public bool IsPublic { get; set; } // отображается ли в публичном API
+    public bool IsCritical { get; set; } // критичность: при сбое критического сервиса вся система не работает
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 

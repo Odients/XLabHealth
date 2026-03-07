@@ -79,7 +79,11 @@ public class DatabaseHealthCheckProvider : IHealthCheckProvider
                     var metrics = await CollectMetricsAsync(connection, config, cancellationToken);
                     if (metrics.Count > 0)
                     {
-                        result.Metadata = System.Text.Json.JsonSerializer.Serialize(metrics);
+                        var metadataJsonOptions = new System.Text.Json.JsonSerializerOptions
+                        {
+                            PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
+                        };
+                        result.Metadata = System.Text.Json.JsonSerializer.Serialize(metrics, metadataJsonOptions);
                     }
                 }
                 catch (Exception ex)
@@ -221,9 +225,7 @@ public class DatabaseHealthCheckProvider : IHealthCheckProvider
                 
                 metrics["databaseSize"] = new
                 {
-                    // Имя базы данных для идентификации
                     DatabaseName = databaseName,
-                    // Размеры в МБ
                     TotalSizeMB = Math.Round(totalSizeMB, 2),
                     DataSizeMB = Math.Round(dataSizeMB, 2),
                     LogSizeMB = Math.Round(logSizeMB, 2),

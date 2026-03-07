@@ -204,6 +204,12 @@
   color: var(--color-unknown-dark);
 }
 
+.service-card-badge.critical {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #b91c1c;
+  padding: 2px 6px;
+}
+
 .service-card-footer {
   display: flex;
   justify-content: space-between;

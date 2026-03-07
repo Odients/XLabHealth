@@ -4,8 +4,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <AssemblyVersion>1.0.54.0</AssemblyVersion>
-    <FileVersion>1.0.54.0</FileVersion>
+    <AssemblyVersion>1.0.60.0</AssemblyVersion>
+    <FileVersion>1.0.60.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,7 +15,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.OpenApi" Version="1.6.28" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
   </ItemGroup>
 

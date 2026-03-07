@@ -111,6 +111,10 @@ const ServiceDetailPage = () => {
             <span className="info-label">Публичный:</span>
             <span className="info-value">{service.isPublic ? 'Да' : 'Нет'}</span>
           </div>
+          <div className="info-item">
+            <span className="info-label">Критичный:</span>
+            <span className="info-value">{service.isCritical ?? false ? 'Да' : 'Нет'}</span>
+          </div>
         </div>
 
         <div className="info-card">

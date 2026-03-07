@@ -21,6 +21,7 @@ export interface PublicServiceDto {
   id: string;
   name: string;
   status: HealthStatus;
+  isCritical: boolean;
   lastCheckedAt?: string;
 }
 
@@ -45,6 +46,7 @@ export interface ServiceDto {
   retryCount: number;
   isEnabled: boolean;
   isPublic: boolean;
+  isCritical: boolean;
   lastStatus?: HealthStatus;
   lastCheckedAt?: string;
   createdAt: string;
@@ -104,6 +106,7 @@ export interface ServiceCreateDto {
   retryCount: number;
   isEnabled: boolean;
   isPublic: boolean;
+  isCritical: boolean;
   configuration?: ServiceConfigurationDto;
 }
 
@@ -117,6 +120,7 @@ export interface ServiceUpdateDto {
   retryCount?: number;
   isEnabled?: boolean;
   isPublic?: boolean;
+  isCritical?: boolean;
   configuration?: ServiceConfigurationDto;
 }
 

@@ -291,6 +291,12 @@
   border: 1px solid rgba(107, 114, 128, 0.2);
 }
 
+.service-admin-card-badge.critical {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.15) 100%);
+  color: #b91c1c;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
 .service-admin-card-footer {
   display: flex;
   justify-content: space-between;

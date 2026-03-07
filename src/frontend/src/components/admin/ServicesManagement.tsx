@@ -270,6 +270,11 @@ const ServicesManagement = () => {
                       <span className={`service-admin-card-badge ${service.isPublic ? 'public' : 'private'}`}>
                         {service.isPublic ? '✓ Публичный' : '✕ Приватный'}
                       </span>
+                      {(service.isCritical ?? false) && (
+                        <span className="service-admin-card-badge critical">
+                          ⚠ Критичный
+                        </span>
+                      )}
                     </div>
 
                     <div className="service-admin-card-footer">
