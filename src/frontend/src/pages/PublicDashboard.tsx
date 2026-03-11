@@ -72,6 +72,11 @@ const PublicDashboard = () => {
 
   // Показываем экран блокировки IP вместо пустого дашборда
   if (ipStatus?.isBlocked) {
+    const ipValue = ipStatus.ipAddress || t('public.dashboard.ipBlocked.unknown');
+    const dateValue = ipStatus.blockedDate
+      ? formatDateTimeLocalized(ipStatus.blockedDate)
+      : t('public.dashboard.ipBlocked.dateNotSpecified');
+
     return (
       <div className="public-dashboard ip-blocked-screen">
         <div className="container">
@@ -81,18 +86,29 @@ const PublicDashboard = () => {
             <p className="ip-blocked-screen-description">{t('public.dashboard.ipBlocked.screenDescription')}</p>
             <div className="ip-blocked-screen-details">
               <p>
-                {t('public.dashboard.ipBlocked.message', { 
-                  ip: ipStatus.ipAddress || t('public.dashboard.ipBlocked.unknown')
-                })}
+                {t('public.dashboard.ipBlocked.message', { ip: ipValue })}
               </p>
               <p className="ip-blocked-screen-date">
-                {t('public.dashboard.ipBlocked.blockedDate', { 
-                  date: ipStatus.blockedDate
-                    ? formatDateTimeLocalized(ipStatus.blockedDate)
-                    : t('public.dashboard.ipBlocked.dateNotSpecified')
-                })}
+                {t('public.dashboard.ipBlocked.blockedDate', { date: dateValue })}
               </p>
             </div>
+            {import.meta.env.DEV && (
+              <details className="ip-blocked-diagnostics">
+                <summary>Диагностика</summary>
+                <pre className="ip-blocked-diagnostics-content">
+                  {JSON.stringify(
+                    {
+                      ipStatus: ipStatus,
+                      ipValue,
+                      dateValue,
+                      clientIp,
+                    },
+                    null,
+                    2
+                  )}
+                </pre>
+              </details>
+            )}
           </div>
         </div>
       </div>

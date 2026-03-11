@@ -15,8 +15,8 @@
       "noServices": "Няма даступных сэрвісаў",
       "ipBlocked": {
         "warning": "Увага",
-        "message": "Ваш IP-адрас ({ip}) знаходзіцца ў спісе заблакіраваных.",
-        "blockedDate": "Дата блакіроўкі: {date}",
+        "message": "Ваш IP-адрас ({{ip}}) знаходзіцца ў спісе заблакіраваных.",
+        "blockedDate": "Дата блакіроўкі: {{date}}",
         "unknown": "не паказаны",
         "dateNotSpecified": "не паказана",
         "screenTitle": "Доступ забаронены",
@@ -43,12 +43,12 @@
       "signIn": "Уваход"
     },
     "footer": {
-      "copyright": "© {year} X-Lab Status Service",
+      "copyright": "© {{year}} X-Lab Status Service",
       "website": "x-lab.by"
     },
     "backendUnavailable": {
       "message": "Сэрвіс часова недаступны. Калі ласка, паспрабуйце пазней.",
-      "autoRetry": "Аўтаматычная спроба перападключэння кожныя {seconds} сек...",
+      "autoRetry": "Аўтаматычная спроба перападключэння кожныя {{seconds}} сек...",
       "retry": "Паспрабаваць зноў"
     },
     "status": {

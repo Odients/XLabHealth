@@ -15,8 +15,8 @@
       "noServices": "Немає доступних сервісів",
       "ipBlocked": {
         "warning": "Увага",
-        "message": "Ваша IP-адреса ({ip}) знаходиться в списку заблокованих.",
-        "blockedDate": "Дата блокування: {date}",
+        "message": "Ваша IP-адреса ({{ip}}) знаходиться в списку заблокованих.",
+        "blockedDate": "Дата блокування: {{date}}",
         "unknown": "не вказано",
         "dateNotSpecified": "не вказана",
         "screenTitle": "Доступ заборонено",
@@ -43,12 +43,12 @@
       "signIn": "Вхід"
     },
     "footer": {
-      "copyright": "© {year} X-Lab Status Service",
+      "copyright": "© {{year}} X-Lab Status Service",
       "website": "x-lab.by"
     },
     "backendUnavailable": {
       "message": "Сервіс тимчасово недоступний. Будь ласка, спробуйте пізніше.",
-      "autoRetry": "Автоматична спроба переподключення кожні {seconds} сек...",
+      "autoRetry": "Автоматична спроба переподключення кожні {{seconds}} сек...",
       "retry": "Спробувати знову"
     },
     "status": {

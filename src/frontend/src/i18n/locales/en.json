@@ -15,8 +15,8 @@
       "noServices": "No available services",
       "ipBlocked": {
         "warning": "Warning",
-        "message": "Your IP address ({ip}) is in the blocked list.",
-        "blockedDate": "Block date: {date}",
+        "message": "Your IP address ({{ip}}) is in the blocked list.",
+        "blockedDate": "Block date: {{date}}",
         "unknown": "not specified",
         "dateNotSpecified": "not specified",
         "screenTitle": "Access Denied",
@@ -43,12 +43,12 @@
       "signIn": "Sign In"
     },
     "footer": {
-      "copyright": "© {year} X-Lab Status Service",
+      "copyright": "© {{year}} X-Lab Status Service",
       "website": "x-lab.by"
     },
     "backendUnavailable": {
       "message": "Service temporarily unavailable. Please try again later.",
-      "autoRetry": "Automatic reconnection attempt every {seconds} sec...",
+      "autoRetry": "Automatic reconnection attempt every {{seconds}} sec...",
       "retry": "Try again"
     },
     "status": {
