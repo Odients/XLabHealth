@@ -92,23 +92,6 @@ const PublicDashboard = () => {
                 {t('public.dashboard.ipBlocked.blockedDate', { date: dateValue })}
               </p>
             </div>
-            {import.meta.env.DEV && (
-              <details className="ip-blocked-diagnostics">
-                <summary>Диагностика</summary>
-                <pre className="ip-blocked-diagnostics-content">
-                  {JSON.stringify(
-                    {
-                      ipStatus: ipStatus,
-                      ipValue,
-                      dateValue,
-                      clientIp,
-                    },
-                    null,
-                    2
-                  )}
-                </pre>
-              </details>
-            )}
           </div>
         </div>
       </div>
