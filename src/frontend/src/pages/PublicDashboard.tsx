@@ -48,14 +48,8 @@ const PublicDashboard = () => {
   });
 
   const { data: ipStatus, isLoading: ipStatusLoading } = useQuery({
-    queryKey: ['ip-status', clientIp],
-    queryFn: () => {
-      if (!clientIp) {
-        throw new Error('IP address not available');
-      }
-      return publicApi.getIpStatus(clientIp);
-    },
-    enabled: !!clientIp, // Запрос выполняется только когда IP определен
+    queryKey: ['ip-status', clientIp ?? 'connection'],
+    queryFn: () => publicApi.getIpStatus(clientIp ?? undefined),
     refetchInterval: 10000, // Обновление каждые 10 секунд
     retry: false, // Не повторять запрос при ошибке
   });
@@ -91,13 +85,13 @@ const PublicDashboard = () => {
                   ip: ipStatus.ipAddress || t('public.dashboard.ipBlocked.unknown')
                 })}
               </p>
-              {ipStatus.blockedDate && (
-                <p className="ip-blocked-screen-date">
-                  {t('public.dashboard.ipBlocked.blockedDate', { 
-                    date: formatDateTimeLocalized(ipStatus.blockedDate)
-                  })}
-                </p>
-              )}
+              <p className="ip-blocked-screen-date">
+                {t('public.dashboard.ipBlocked.blockedDate', { 
+                  date: ipStatus.blockedDate
+                    ? formatDateTimeLocalized(ipStatus.blockedDate)
+                    : t('public.dashboard.ipBlocked.dateNotSpecified')
+                })}
+              </p>
             </div>
           </div>
         </div>

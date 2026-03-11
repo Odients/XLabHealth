@@ -175,14 +175,19 @@ public class PublicController : ControllerBase
     /// <summary>
     /// Проверить статус IP-адреса (заблокирован ли)
     /// </summary>
-    /// <param name="ipAddress">IP-адрес для проверки</param>
+    /// <param name="ipAddress">IP-адрес для проверки (опционально — при отсутствии используется IP соединения)</param>
     /// <param name="cancellationToken">Токен отмены</param>
     [HttpGet("ip-status")]
     public async Task<ActionResult<IpStatusDto>> GetIpStatus(
         [FromQuery] string? ipAddress,
         CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(ipAddress))
+        // Если IP не передан, используем IP из соединения (тот, что видит сервер)
+        var ipToCheck = !string.IsNullOrWhiteSpace(ipAddress)
+            ? ipAddress
+            : GetClientIpAddress();
+
+        if (string.IsNullOrWhiteSpace(ipToCheck))
         {
             return Ok(new IpStatusDto
             {
@@ -192,23 +197,39 @@ public class PublicController : ControllerBase
             });
         }
 
-        var isBlocked = await _blockedIpRepository.IsBlockedAsync(ipAddress, cancellationToken);
-        DateTimeOffset? blockedDate = null;
-
-        if (isBlocked)
-        {
-            // Получаем информацию о блокировке
-            var blockedIps = await _blockedIpRepository.GetAllAsync(cancellationToken);
-            var blockedIp = blockedIps.FirstOrDefault(b => b.IpAddress == ipAddress);
-            blockedDate = blockedIp?.Date;
-        }
+        var blockedIp = await _blockedIpRepository.GetByIpAddressAsync(ipToCheck, cancellationToken);
+        var isBlocked = blockedIp != null;
 
         return Ok(new IpStatusDto
         {
-            IpAddress = ipAddress,
+            IpAddress = blockedIp?.IpAddress ?? ipToCheck,
             IsBlocked = isBlocked,
-            BlockedDate = blockedDate
+            BlockedDate = blockedIp?.Date
         });
+    }
+
+    /// <summary>
+    /// Получить IP-адрес клиента с учётом прокси
+    /// </summary>
+    private string? GetClientIpAddress()
+    {
+        var forwardedFor = HttpContext.Request.Headers["X-Forwarded-For"].FirstOrDefault();
+        if (!string.IsNullOrWhiteSpace(forwardedFor))
+        {
+            var ip = forwardedFor.Split(',')[0].Trim();
+            if (!string.IsNullOrWhiteSpace(ip))
+            {
+                return ip;
+            }
+        }
+
+        var realIp = HttpContext.Request.Headers["X-Real-IP"].FirstOrDefault();
+        if (!string.IsNullOrWhiteSpace(realIp))
+        {
+            return realIp;
+        }
+
+        return HttpContext.Connection.RemoteIpAddress?.ToString();
     }
 }
 

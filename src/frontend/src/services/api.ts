@@ -39,8 +39,11 @@ export const publicApi = {
     return response.data;
   },
 
-  getIpStatus: async (ipAddress: string): Promise<IpStatusDto> => {
-    const response = await apiClient.get<IpStatusDto>(`/api/public/ip-status?ipAddress=${encodeURIComponent(ipAddress)}`);
+  getIpStatus: async (ipAddress?: string | null): Promise<IpStatusDto> => {
+    const url = ipAddress
+      ? `/api/public/ip-status?ipAddress=${encodeURIComponent(ipAddress)}`
+      : '/api/public/ip-status';
+    const response = await apiClient.get<IpStatusDto>(url);
     return response.data;
   },
 };

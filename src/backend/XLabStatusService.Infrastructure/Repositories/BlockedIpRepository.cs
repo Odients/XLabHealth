@@ -37,6 +37,17 @@ public class BlockedIpRepository : IBlockedIpRepository
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<BlockedIp?> GetByIpAddressAsync(string ipAddress, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(ipAddress))
+        {
+            return null;
+        }
+
+        return await _context.BlockedIps
+            .FirstOrDefaultAsync(b => b.IpAddress == ipAddress, cancellationToken);
+    }
+
     public async Task<BlockedIp?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.BlockedIps

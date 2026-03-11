@@ -21,6 +21,14 @@ public interface IBlockedIpRepository
     Task<IEnumerable<Entities.BlockedIp>> GetAllAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Получить заблокированный IP по адресу
+    /// </summary>
+    /// <param name="ipAddress">IP-адрес</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Запись о заблокированном IP или null</returns>
+    Task<Entities.BlockedIp?> GetByIpAddressAsync(string ipAddress, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Получить заблокированный IP по ID
     /// </summary>
     /// <param name="id">ID записи</param>

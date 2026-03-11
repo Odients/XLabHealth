@@ -17,7 +17,8 @@
         "warning": "Uwaga",
         "message": "Twój adres IP ({ip}) znajduje się na liście zablokowanych.",
         "blockedDate": "Data blokady: {date}",
-        "unknown": "nieznany",
+        "unknown": "nie podano",
+        "dateNotSpecified": "nie podano",
         "screenTitle": "Dostęp zabroniony",
         "screenDescription": "Twój adres IP został zablokowany. Skontaktuj się z administratorem w celu uzyskania dostępu."
       }
